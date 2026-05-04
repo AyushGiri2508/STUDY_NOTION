@@ -3,6 +3,7 @@ import { usePayment } from '../../hooks/usePayment';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiOutlineTrash } from 'react-icons/hi';
+import './Cart.css';
 
 const Cart = () => {
   const { cart, removeFromCart, totalPrice, totalItems } = useCart();

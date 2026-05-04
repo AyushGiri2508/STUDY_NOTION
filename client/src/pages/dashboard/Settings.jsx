@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import { motion } from 'framer-motion';
 import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
+import './Settings.css';
 
 const Settings = () => {
   const { user } = useAuth();

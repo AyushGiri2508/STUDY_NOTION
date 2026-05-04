@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiOutlinePlusCircle, HiOutlineTrash } from 'react-icons/hi';
 import toast from 'react-hot-toast';
+import './AddCourse.css';
 
 const AddCourse = () => {
   const { createCourse } = useInstructorCourses();

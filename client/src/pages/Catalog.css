@@ -1,0 +1,47 @@
+/* ===== CATALOG PAGE ===== */
+
+/* Breadcrumb */
+.catalog-breadcrumb {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.catalog-breadcrumb a {
+  color: var(--color-text-secondary);
+}
+
+.catalog-breadcrumb a:hover {
+  color: var(--color-yellow);
+}
+
+/* Category Tabs */
+.catalog-tabs {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-2xl);
+}
+
+/* Section Headings */
+.catalog-section {
+  margin-bottom: var(--space-4xl);
+}
+
+.catalog-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.catalog-view-all {
+  font-size: 0.813rem;
+  color: var(--color-yellow);
+}
+
+@media (max-width: 768px) {
+  .catalog-tabs {
+    gap: var(--space-xs);
+  }
+}

@@ -4,6 +4,7 @@ import { useCategories } from '../hooks/useCategories';
 import CourseCard from '../components/course/CourseCard';
 import Loader from '../components/common/Loader';
 import { motion } from 'framer-motion';
+import './Catalog.css';
 
 const Catalog = () => {
   const { categoryId } = useParams();

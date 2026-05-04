@@ -1,0 +1,126 @@
+/* ===== COURSE DETAILS PAGE ===== */
+
+/* Hero Banner */
+.course-hero {
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-3xl) 0;
+}
+
+.course-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+/* Course Meta Info */
+.course-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.course-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.course-instructor {
+  margin-top: var(--space-md);
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+/* Price Card */
+.course-price-card {
+  position: sticky;
+  top: calc(var(--nav-height) + var(--space-lg));
+}
+
+.course-price-thumb {
+  height: 180px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: var(--space-lg);
+  background: var(--color-bg-secondary);
+}
+
+.course-price-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.course-price {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-yellow);
+  margin-bottom: var(--space-lg);
+}
+
+.course-price-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* Content Area */
+.course-content {
+  max-width: 760px;
+}
+
+.course-learn-box {
+  padding: var(--space-xl);
+  margin-bottom: var(--space-2xl);
+}
+
+.course-learn-box h2 {
+  font-size: 1.25rem;
+  margin-bottom: var(--space-md);
+}
+
+.course-learn-text {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.8;
+  white-space: pre-line;
+}
+
+/* Reviews Section */
+.course-review {
+  padding: var(--space-lg);
+}
+
+.course-review-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.course-review-user {
+  font-size: 0.813rem;
+  color: var(--color-text-muted);
+}
+
+.course-review-text {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .course-hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .course-price-card {
+    position: static;
+  }
+}

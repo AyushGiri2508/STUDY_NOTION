@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { HiOutlineAcademicCap, HiOutlineGlobeAlt, HiOutlineLightBulb } from 'react-icons/hi';
+import './About.css';
 
 const About = () => (
   <div className="page-wrapper">

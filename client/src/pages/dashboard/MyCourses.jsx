@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Loader from '../../components/common/Loader';
 import { HiOutlinePlusCircle, HiOutlineUserGroup } from 'react-icons/hi';
+import './MyCourses.css';
 
 const MyCourses = () => {
   const { courses, loading } = useInstructorCourses();

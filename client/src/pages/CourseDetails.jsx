@@ -9,6 +9,7 @@ import Loader from '../components/common/Loader';
 import { motion } from 'framer-motion';
 import { HiOutlineGlobeAlt, HiOutlineClock, HiOutlineUserGroup, HiOutlineDocumentText, HiArrowLeft } from 'react-icons/hi';
 import toast from 'react-hot-toast';
+import './CourseDetails.css';
 
 const CourseDetails = () => {
   const { courseId } = useParams();

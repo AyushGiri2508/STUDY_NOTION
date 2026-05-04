@@ -1,0 +1,70 @@
+/* ===== SIGNUP PAGE ===== */
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--nav-height));
+  padding-top: var(--nav-height);
+}
+
+.auth-card {
+  max-width: 460px;
+  width: 100%;
+  padding: var(--space-2xl);
+  margin: var(--space-xl);
+}
+
+.auth-card h1 {
+  font-size: 1.75rem;
+  margin-bottom: var(--space-sm);
+  text-align: center;
+}
+
+.auth-card .auth-subtitle {
+  color: var(--color-text-secondary);
+  text-align: center;
+  font-size: 0.875rem;
+  margin-bottom: var(--space-2xl);
+}
+
+/* Role Tabs (Student / Instructor) */
+.auth-tabs {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-2xl);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  padding: 4px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 0.625rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+}
+
+.auth-tab.active {
+  background: var(--color-yellow);
+  color: #000814;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: var(--space-xl);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.auth-footer a {
+  color: var(--color-yellow);
+  font-weight: 600;
+}

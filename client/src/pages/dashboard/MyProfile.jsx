@@ -2,6 +2,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiOutlinePencil } from 'react-icons/hi';
+import './MyProfile.css';
 
 const MyProfile = () => {
   const { user } = useAuth();

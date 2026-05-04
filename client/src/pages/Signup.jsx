@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import './Auth.css';
+import './Signup.css';
 
 const Signup = () => {
   const { sendOTP, authLoading } = useAuth();

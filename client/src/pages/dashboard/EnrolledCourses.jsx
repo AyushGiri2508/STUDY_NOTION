@@ -2,6 +2,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiOutlinePlay } from 'react-icons/hi';
+import './EnrolledCourses.css';
 
 const EnrolledCourses = () => {
   const { user } = useAuth();

@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { HiOutlineUser, HiOutlineCog, HiOutlineCollection, HiOutlinePlusCircle, HiOutlineShoppingCart, HiOutlineLogout, HiOutlineHome } from 'react-icons/hi';
-import '../Dashboard.css';
+import './DashboardLayout.css';
 
 const DashboardLayout = () => {
   const { isStudent, isInstructor, logout } = useAuth();
