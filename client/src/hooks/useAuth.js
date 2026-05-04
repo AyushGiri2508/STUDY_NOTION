@@ -28,8 +28,15 @@ export const useAuth = () => {
     setAuthLoading(true);
     try {
       const res = await authApi.signup(data);
+      
+      // Auto-login after successful signup
+      const loginRes = await authApi.login({ email: data.email, password: data.password });
+      setUser(loginRes.data.user);
+      setToken(loginRes.data.token);
+      
       toast.success('Account created successfully!');
-      navigate('/login');
+      navigate('/');
+      
       return res.data;
     } catch (err) {
       toast.error(err.response?.data?.message || 'Signup failed');
@@ -46,7 +53,7 @@ export const useAuth = () => {
       setUser(res.data.user);
       setToken(res.data.token);
       toast.success('Welcome back!');
-      navigate('/dashboard/my-profile');
+      navigate('/');
       return res.data;
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed');

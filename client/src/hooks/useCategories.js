@@ -11,7 +11,8 @@ export const useCategories = () => {
     setLoading(true);
     try {
       const res = await categoryApi.showAllCategories();
-      setCategories(res.data.allCategories || []);
+      const categoriesList = res.data.data || res.data.allCategories || [];
+      setCategories(categoriesList);
     } catch (err) {
       toast.error('Failed to load categories');
     } finally {

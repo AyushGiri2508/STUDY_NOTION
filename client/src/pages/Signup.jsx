@@ -37,32 +37,32 @@ const Signup = () => {
             <button key={type} className={`auth-tab ${accountType === type ? 'active' : ''}`} onClick={() => setAccountType(type)}>{type}</button>
           ))}
         </div>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} autoComplete="off">
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">First Name</label>
-              <input className="form-input" name="firstName" placeholder="John" value={formData.firstName} onChange={handleChange} required />
+              <input className="form-input" name="firstName" placeholder="John" value={formData.firstName} onChange={handleChange} required autoComplete="off" />
             </div>
             <div className="form-group">
               <label className="form-label">Last Name</label>
-              <input className="form-input" name="lastName" placeholder="Doe" value={formData.lastName} onChange={handleChange} required />
+              <input className="form-input" name="lastName" placeholder="Doe" value={formData.lastName} onChange={handleChange} required autoComplete="off" />
             </div>
           </div>
           <div className="form-group">
             <label className="form-label">Email</label>
-            <input className="form-input" name="email" type="email" placeholder="you@example.com" value={formData.email} onChange={handleChange} required />
+            <input className="form-input" name="email" type="email" placeholder="you@example.com" value={formData.email} onChange={handleChange} required autoComplete="off" />
           </div>
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Password</label>
               <div className="input-with-icon">
-                <input className="form-input" name="password" type={showPwd ? 'text' : 'password'} placeholder="Min 6 chars" value={formData.password} onChange={handleChange} required />
+                <input className="form-input" name="password" type={showPwd ? 'text' : 'password'} placeholder="Min 6 chars" value={formData.password} onChange={handleChange} required autoComplete="new-password" />
                 <span className="input-icon" onClick={() => setShowPwd(!showPwd)}>{showPwd ? <HiOutlineEyeOff /> : <HiOutlineEye />}</span>
               </div>
             </div>
             <div className="form-group">
               <label className="form-label">Confirm Password</label>
-              <input className="form-input" name="confirmPassword" type="password" placeholder="Confirm" value={formData.confirmPassword} onChange={handleChange} required />
+              <input className="form-input" name="confirmPassword" type="password" placeholder="Confirm" value={formData.confirmPassword} onChange={handleChange} required autoComplete="new-password" />
             </div>
           </div>
           <button className="btn btn-yellow btn-lg" type="submit" disabled={authLoading} style={{ width: '100%' }}>
