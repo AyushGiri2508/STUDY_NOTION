@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { HiOutlineUser, HiOutlineCog, HiOutlineCollection, HiOutlinePlusCircle, HiOutlineShoppingCart, HiOutlineLogout, HiOutlinePlay } from 'react-icons/hi';
+import { HiOutlineUser, HiOutlineCog, HiOutlineCollection, HiOutlinePlusCircle, HiOutlineShoppingCart, HiOutlineLogout, HiOutlineHome } from 'react-icons/hi';
 import '../Dashboard.css';
 
 const DashboardLayout = () => {
@@ -13,6 +13,7 @@ const DashboardLayout = () => {
     <div className="dashboard-layout" style={{ paddingTop: 'var(--nav-height)' }}>
       <aside className="sidebar">
         <div className="sidebar-links">
+          <NavLink to="/dashboard" end className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}><HiOutlineHome /> Dashboard</NavLink>
           <NavLink to="/dashboard/my-profile" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}><HiOutlineUser /> My Profile</NavLink>
 
           {isStudent && (

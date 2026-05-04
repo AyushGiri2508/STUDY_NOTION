@@ -21,7 +21,6 @@ const Signup = () => {
     if (formData.password.length < 6) { toast.error('Password must be at least 6 characters'); return; }
     try {
       await sendOTP(formData.email);
-      // Store signup data in sessionStorage for OTP page
       sessionStorage.setItem('signupData', JSON.stringify({ ...formData, accountType }));
       navigate('/verify-otp');
     } catch {}

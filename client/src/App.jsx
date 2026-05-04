@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import PublicRoute from './components/common/PublicRoute';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -25,6 +26,7 @@ import EnrolledCourses from './pages/dashboard/EnrolledCourses';
 import Cart from './pages/dashboard/Cart';
 import MyCourses from './pages/dashboard/MyCourses';
 import AddCourse from './pages/dashboard/AddCourse';
+import DashboardHome from './pages/dashboard/DashboardHome';
 
 function App() {
   return (
@@ -34,11 +36,11 @@ function App() {
           <Navbar />
           <Routes>
             {/* Public */}
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/verify-otp" element={<VerifyOTP />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
+            <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+            <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
+            <Route path="/verify-otp" element={<PublicRoute><VerifyOTP /></PublicRoute>} />
+            <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
             <Route path="/update-password/:token" element={<UpdatePassword />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/catalog/:categoryId" element={<Catalog />} />
@@ -48,6 +50,7 @@ function App() {
 
             {/* Dashboard — Protected */}
             <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+              <Route index element={<DashboardHome />} />
               <Route path="my-profile" element={<MyProfile />} />
               <Route path="settings" element={<Settings />} />
 

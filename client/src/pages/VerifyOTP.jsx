@@ -38,11 +38,20 @@ const VerifyOTP = () => {
     e.preventDefault();
     const otpStr = otp.join('');
     if (otpStr.length !== 6) { toast.error('Please enter complete OTP'); return; }
-    try { await signup({ ...signupData, otp: otpStr }); sessionStorage.removeItem('signupData'); } catch {}
+    try {
+      await signup({ ...signupData, otp: otpStr });
+      sessionStorage.removeItem('signupData');
+    } catch {}
   };
 
   const handleResend = async () => {
-    if (signupData?.email) { try { await sendOTP(signupData.email); setOtp(Array(6).fill('')); inputRefs.current[0]?.focus(); } catch {} }
+    if (signupData?.email) {
+      try {
+        await sendOTP(signupData.email);
+        setOtp(Array(6).fill(''));
+        inputRefs.current[0]?.focus();
+      } catch {}
+    }
   };
 
   return (
@@ -50,6 +59,9 @@ const VerifyOTP = () => {
       <motion.div className="auth-card glass-card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <h1>Verify Email</h1>
         <p className="auth-subtitle">We sent a 6-digit OTP to <strong style={{ color: 'var(--color-yellow)' }}>{signupData?.email}</strong></p>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.813rem', textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
+          Check your inbox (and spam folder) for the verification code
+        </p>
         <form onSubmit={handleSubmit}>
           <div className="otp-inputs" onPaste={handlePaste}>
             {otp.map((digit, i) => (
