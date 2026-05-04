@@ -1,29 +1,32 @@
-const nodemailer = require("nodemailer");
-
 const mailSender = async (email, title, body) => {
   try {
-    let transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST,
-      port: 587,
-      secure: false, // use STARTTLS
-      auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "api-key": process.env.BREVO_API_KEY,
       },
-      tls: {
-        rejectUnauthorized: false,
-      },
+      body: JSON.stringify({
+        sender: {
+          name: process.env.BREVO_SENDER_NAME || "StudyNotion",
+          email: process.env.BREVO_SENDER_EMAIL,
+        },
+        to: [{ email }],
+        subject: title,
+        htmlContent: body,
+      }),
     });
 
-    let info = await transporter.sendMail({
-      from: `"StudyNotion" <${process.env.MAIL_USER}>`,
-      to: email,
-      subject: title,
-      html: body,
-    });
+    const data = await response.json();
 
-    console.log("✅ Email sent:", info.messageId);
-    return info;
+    if (!response.ok) {
+      console.log("❌ Brevo API error:", data);
+      throw new Error(data.message || "Brevo email failed");
+    }
+
+    console.log("✅ Email sent via Brevo:", data.messageId);
+    return data;
   } catch (error) {
     console.log("❌ Mail error:", error.message);
     throw error;
