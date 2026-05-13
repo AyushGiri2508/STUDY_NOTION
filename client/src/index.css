@@ -154,7 +154,18 @@ h1,h2,h3,h4,h5,h6 { font-family: var(--font-heading); font-weight: 700; line-hei
 .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--color-yellow); box-shadow: 0 0 0 3px rgba(255,214,10,0.1); }
 .form-input::placeholder, .form-textarea::placeholder { color: var(--color-text-muted); }
 .form-textarea { min-height: 120px; resize: vertical; }
-.form-select { appearance: none; cursor: pointer; }
+.form-select {
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  cursor: pointer;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 12px;
+}
+.form-select:focus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23FFD60A' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
 .form-select option { background: var(--color-bg-secondary); color: var(--color-text-primary); }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); }
 .form-error { font-size: 0.813rem; color: var(--color-red); margin-top: var(--space-xs); }
