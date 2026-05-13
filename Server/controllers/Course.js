@@ -7,11 +7,14 @@ const { uploadImageToCloudinary } = require("../utils/imageUploader");
 exports.createCourse = async (req, res) => {
   try {
     // fetch data
-    const { courseName, courseDescription, whatYouWillLearn, price, tag } =
+    const { courseName, courseDescription, whatYouWillLearn, price, tag, category, instructions, status } =
       req.body;
 
     // get thumbnail
-    const thumbnail = req.files.thumbnailImage;
+    const thumbnail = req.files?.thumbnailImage;
+
+    // The category ID can come as 'tag' or 'category' from the frontend
+    const categoryId = category || tag;
 
     // validation
     if (
@@ -19,7 +22,7 @@ exports.createCourse = async (req, res) => {
       !courseDescription ||
       !whatYouWillLearn ||
       !price ||
-      !tag ||
+      !categoryId ||
       !thumbnail
     ) {
       return res.status(400).json({
@@ -40,12 +43,12 @@ exports.createCourse = async (req, res) => {
       });
     }
 
-    // check given tag/category is valid or not
-    const categoryDetails = await Category.findById(tag);
+    // check given category is valid or not
+    const categoryDetails = await Category.findById(categoryId);
     if (!categoryDetails) {
       return res.status(404).json({
         success: false,
-        message: "Category details not found",
+        message: "Category details not found. Please select a valid category.",
       });
     }
 
@@ -62,8 +65,11 @@ exports.createCourse = async (req, res) => {
       instructor: instructorDetails._id,
       whatYouWillLearn: whatYouWillLearn,
       price,
-      tag: tag,
+      tag: Array.isArray(tag) ? tag : [categoryDetails.name],
+      category: categoryDetails._id,
       thumbnail: thumbnailImage.secure_url,
+      instructions: instructions ? (Array.isArray(instructions) ? instructions : [instructions]) : [],
+      status: status || "Draft",
     });
 
     // add new course to the user schema of instructor
@@ -103,6 +109,7 @@ exports.createCourse = async (req, res) => {
     });
   }
 };
+
 
 // Get All Courses handler function
 exports.getAllCourses = async (req, res) => {

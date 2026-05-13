@@ -11,8 +11,11 @@ const seedCategories = async () => {
       { name: "Web Development", description: "Learn to build modern web applications." },
       { name: "Mobile Development", description: "Build apps for iOS and Android." },
       { name: "Data Science", description: "Analyze data and build machine learning models." },
+      { name: "Machine Learning", description: "Deep learning, neural networks, and AI." },
+      { name: "DevOps", description: "CI/CD, Docker, Kubernetes, and cloud infrastructure." },
       { name: "Design", description: "Master UI/UX and graphic design." },
       { name: "Business", description: "Learn entrepreneurship and management." },
+      { name: "Blockchain", description: "Smart contracts, DeFi, and Web3 development." },
     ];
 
     for (let cat of categories) {

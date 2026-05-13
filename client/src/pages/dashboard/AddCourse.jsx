@@ -31,6 +31,8 @@ const AddCourse = () => {
     try {
       const formData = new FormData();
       Object.entries(courseData).forEach(([k, v]) => formData.append(k, v));
+      // Also send category field (backend accepts both 'tag' and 'category')
+      if (courseData.tag) formData.append('category', courseData.tag);
       formData.append('thumbnailImage', thumbnail);
       const course = await createCourse(formData);
       setCreatedCourse(course);
