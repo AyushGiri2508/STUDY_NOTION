@@ -6,6 +6,10 @@ const { uploadImageToCloudinary } = require("../utils/imageUploader");
 // Create Course handler function
 exports.createCourse = async (req, res) => {
   try {
+    console.log("=== CREATE COURSE REQUEST ===");
+    console.log("Body fields:", Object.keys(req.body));
+    console.log("Files:", req.files ? Object.keys(req.files) : "NO FILES");
+
     // fetch data
     const { courseName, courseDescription, whatYouWillLearn, price, tag, category, instructions, status } =
       req.body;
@@ -16,25 +20,41 @@ exports.createCourse = async (req, res) => {
     // The category ID can come as 'tag' or 'category' from the frontend
     const categoryId = category || tag;
 
+    console.log("Category ID received:", categoryId);
+
     // validation
-    if (
-      !courseName ||
-      !courseDescription ||
-      !whatYouWillLearn ||
-      !price ||
-      !categoryId ||
-      !thumbnail
-    ) {
+    if (!courseName || !courseDescription || !whatYouWillLearn || !price || !categoryId) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required",
+        message: `Missing required fields: ${[
+          !courseName && 'courseName',
+          !courseDescription && 'courseDescription',
+          !whatYouWillLearn && 'whatYouWillLearn',
+          !price && 'price',
+          !categoryId && 'category',
+        ].filter(Boolean).join(', ')}`,
+      });
+    }
+
+    if (!thumbnail) {
+      return res.status(400).json({
+        success: false,
+        message: "Thumbnail image is required",
+      });
+    }
+
+    // Validate that categoryId is a valid MongoDB ObjectId
+    const mongoose = require("mongoose");
+    if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid category ID format. Please re-select a category.",
       });
     }
 
     // check for instructor
     const userId = req.user.id;
     const instructorDetails = await User.findById(userId);
-    console.log("Instructor Details:", instructorDetails);
 
     if (!instructorDetails) {
       return res.status(404).json({
@@ -48,15 +68,19 @@ exports.createCourse = async (req, res) => {
     if (!categoryDetails) {
       return res.status(404).json({
         success: false,
-        message: "Category details not found. Please select a valid category.",
+        message: "Category not found in database. Please run category seeder or select a valid category.",
       });
     }
+
+    console.log("Uploading thumbnail to Cloudinary...");
 
     // upload image to cloudinary
     const thumbnailImage = await uploadImageToCloudinary(
       thumbnail,
       process.env.FOLDER_NAME
     );
+
+    console.log("Thumbnail uploaded:", thumbnailImage.secure_url);
 
     // create an entry for new course
     const newCourse = await Course.create({
@@ -75,24 +99,18 @@ exports.createCourse = async (req, res) => {
     // add new course to the user schema of instructor
     await User.findByIdAndUpdate(
       { _id: instructorDetails._id },
-      {
-        $push: {
-          courses: newCourse._id,
-        },
-      },
+      { $push: { courses: newCourse._id } },
       { new: true }
     );
 
     // update the category schema
     await Category.findByIdAndUpdate(
       categoryDetails._id,
-      {
-        $push: {
-          courses: newCourse._id,
-        },
-      },
+      { $push: { courses: newCourse._id } },
       { new: true }
     );
+
+    console.log("✅ Course created successfully:", newCourse._id);
 
     // return response
     return res.status(200).json({
@@ -101,10 +119,10 @@ exports.createCourse = async (req, res) => {
       data: newCourse,
     });
   } catch (error) {
-    console.error(error);
+    console.error("❌ Create course error:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to create course",
+      message: error.message || "Failed to create course",
       error: error.message,
     });
   }

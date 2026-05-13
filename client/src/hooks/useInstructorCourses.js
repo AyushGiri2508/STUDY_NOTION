@@ -27,7 +27,9 @@ export const useInstructorCourses = () => {
       await fetchInstructorCourses();
       return res.data.data;
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to create course');
+      const msg = err.response?.data?.message || err.message || 'Failed to create course';
+      console.error('Create course error:', err.response?.data || err);
+      toast.error(msg);
       throw err;
     }
   };
