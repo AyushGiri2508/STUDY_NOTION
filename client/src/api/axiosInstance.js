@@ -20,15 +20,24 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 globally
+// Handle 401 globally — only redirect for token-related errors, not validation errors
 API.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+      const msg = error.response?.data?.message || '';
+
+      // Only redirect to login for token-related 401s
+      // Don't redirect for "wrong password" or similar validation 401s
+      const tokenErrors = ['Token is missing', 'Token is invalid', 'Something went wrong while validating the token'];
+      const isTokenError = tokenErrors.some((e) => msg.includes(e));
+
+      if (isTokenError) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
       }
     }
     return Promise.reject(error);
