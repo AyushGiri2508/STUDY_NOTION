@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import './Auth.css';
 import './VerifyOTP.css';
 
 const VerifyOTP = () => {

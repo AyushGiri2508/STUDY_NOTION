@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
 import { motion } from 'framer-motion';
-import './Login.css';
+import './Auth.css';
 
 const Login = () => {
   const { login, authLoading } = useAuth();

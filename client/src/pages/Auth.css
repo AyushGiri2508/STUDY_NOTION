@@ -1,23 +1,108 @@
-/* ===== AUTH PAGES ===== */
-.auth-page { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - var(--nav-height)); padding-top: var(--nav-height); }
-.auth-card { max-width: 460px; width: 100%; padding: var(--space-2xl); margin: var(--space-xl); }
-.auth-card h1 { font-size: 1.75rem; margin-bottom: var(--space-sm); text-align: center; }
-.auth-card .auth-subtitle { color: var(--color-text-secondary); text-align: center; font-size: 0.875rem; margin-bottom: var(--space-2xl); }
+/* ===== AUTH PAGE ===== */
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--nav-height));
+  padding-top: var(--nav-height);
+  position: relative;
+}
+.auth-page::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255,214,10,0.04), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
 
-.auth-tabs { display: flex; gap: var(--space-xs); margin-bottom: var(--space-2xl); background: rgba(255,255,255,0.03); border-radius: var(--radius-md); padding: 4px; }
-.auth-tab { flex: 1; padding: 0.625rem; text-align: center; font-size: 0.875rem; font-weight: 600; border-radius: var(--radius-sm); cursor: pointer; transition: all var(--transition-fast); background: none; border: none; color: var(--color-text-muted); font-family: var(--font-body); }
-.auth-tab.active { background: var(--color-yellow); color: #000814; }
+.auth-card {
+  max-width: 460px;
+  width: 100%;
+  padding: var(--space-2xl);
+  margin: var(--space-xl);
+  position: relative;
+  z-index: 1;
+}
 
-.auth-divider { display: flex; align-items: center; gap: var(--space-md); margin: var(--space-xl) 0; color: var(--color-text-muted); font-size: 0.813rem; }
-.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--color-border); }
+.auth-card h1 {
+  font-size: 1.75rem;
+  margin-bottom: var(--space-sm);
+  text-align: center;
+}
 
-.auth-footer { text-align: center; margin-top: var(--space-xl); font-size: 0.875rem; color: var(--color-text-secondary); }
-.auth-footer a { color: var(--color-yellow); font-weight: 600; }
+.auth-card .auth-subtitle {
+  color: var(--color-text-secondary);
+  text-align: center;
+  font-size: 0.875rem;
+  margin-bottom: var(--space-2xl);
+}
 
-/* OTP Input */
-.otp-inputs { display: flex; gap: var(--space-sm); justify-content: center; margin-bottom: var(--space-xl); }
-.otp-input { width: 52px; height: 56px; text-align: center; font-size: 1.25rem; font-weight: 700; font-family: var(--font-heading); background: var(--color-bg-input); border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text-primary); outline: none; transition: all var(--transition-fast); }
-.otp-input:focus { border-color: var(--color-yellow); box-shadow: 0 0 0 3px rgba(255,214,10,0.1); }
+.auth-footer {
+  text-align: center;
+  margin-top: var(--space-xl);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
 
-.resend-text { text-align: center; margin-top: var(--space-md); font-size: 0.813rem; color: var(--color-text-muted); }
-.resend-text button { background: none; border: none; color: var(--color-yellow); cursor: pointer; font-weight: 600; font-family: var(--font-body); }
+.auth-footer a {
+  color: var(--color-yellow);
+  font-weight: 600;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin: var(--space-xl) 0;
+  color: var(--color-text-muted);
+  font-size: 0.813rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
+/* Role Tabs (Student / Instructor) */
+.auth-tabs {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-2xl);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  border: 1px solid var(--color-border);
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 0.625rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+}
+
+.auth-tab:hover {
+  color: var(--color-text-primary);
+}
+
+.auth-tab.active {
+  background: var(--color-yellow);
+  color: #000814;
+  box-shadow: 0 2px 8px rgba(255,214,10,0.25);
+}

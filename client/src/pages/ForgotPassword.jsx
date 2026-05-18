@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
 import { motion } from 'framer-motion';
-import './ForgotPassword.css';
+import './Auth.css';
 
 const ForgotPassword = () => {
   const { resetPasswordToken, loading } = useProfile();

@@ -1,47 +1,20 @@
 /* ===== CATALOG PAGE ===== */
+.catalog-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: var(--space-lg); flex-wrap: wrap; }
+.catalog-breadcrumb a { color: var(--color-text-secondary); transition: color var(--transition-fast); }
+.catalog-breadcrumb a:hover { color: var(--color-yellow); }
+.catalog-active { color: var(--color-yellow); font-weight: 500; }
 
-/* Breadcrumb */
-.catalog-breadcrumb {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-md);
-}
+.catalog-header { margin-bottom: var(--space-3xl); }
+.catalog-header h1 { font-size: 2.25rem; margin-bottom: var(--space-sm); }
+.catalog-header p { color: var(--color-text-secondary); max-width: 600px; font-size: 1rem; }
 
-.catalog-breadcrumb a {
-  color: var(--color-text-secondary);
-}
+.catalog-tabs { display: flex; gap: var(--space-sm); flex-wrap: wrap; margin-bottom: var(--space-2xl); }
 
-.catalog-breadcrumb a:hover {
-  color: var(--color-yellow);
-}
+.catalog-section { margin-bottom: var(--space-4xl); }
+.catalog-section-title { font-size: 1.5rem; margin-bottom: var(--space-xl); }
 
-/* Category Tabs */
-.catalog-tabs {
-  display: flex;
-  gap: var(--space-sm);
-  flex-wrap: wrap;
-  margin-bottom: var(--space-2xl);
-}
-
-/* Section Headings */
-.catalog-section {
-  margin-bottom: var(--space-4xl);
-}
-
-.catalog-section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-md);
-}
-
-.catalog-view-all {
-  font-size: 0.813rem;
-  color: var(--color-yellow);
-}
-
-@media (max-width: 768px) {
-  .catalog-tabs {
-    gap: var(--space-xs);
-  }
-}
+.catalog-other { margin-bottom: var(--space-2xl); }
+.catalog-other-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-md); }
+.catalog-other-header h3 { font-size: 1.125rem; }
+.catalog-other-header a { font-size: 0.813rem; color: var(--color-yellow); display: flex; align-items: center; gap: 4px; transition: gap var(--transition-fast); }
+.catalog-other-header a:hover { gap: 8px; }

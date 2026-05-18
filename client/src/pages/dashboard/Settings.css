@@ -1,4 +1,23 @@
 /* ===== SETTINGS PAGE ===== */
-/* Uses shared form styles from index.css */
-/* Uses .dashboard-header from DashboardLayout.css */
-/* Settings-specific styles are minimal as it relies on design system */
+.settings-section {
+  padding: var(--space-2xl);
+  margin-bottom: var(--space-xl);
+}
+
+.settings-section h3 {
+  font-size: 1.125rem;
+  margin-bottom: var(--space-xl);
+}
+
+.danger-zone {
+  border-color: rgba(239, 68, 68, 0.2);
+}
+.danger-zone h3 {
+  color: var(--color-red);
+  margin-bottom: var(--space-sm);
+}
+.danger-zone p {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-lg);
+}

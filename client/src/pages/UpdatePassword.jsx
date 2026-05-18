@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
 import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
 import { motion } from 'framer-motion';
-import './UpdatePassword.css';
+import './Auth.css';
 
 const UpdatePassword = () => {
   const { token } = useParams();

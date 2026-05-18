@@ -1,4 +1,23 @@
-/* ===== MY COURSES PAGE (Instructor) ===== */
-/* Uses .dashboard-header from DashboardLayout.css */
-/* Uses .dash-course-card styles from EnrolledCourses.css */
-/* Uses .badge styles from index.css */
+/* ===== MY COURSES ===== */
+.my-courses-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2xl);
+}
+.my-courses-header .dashboard-header {
+  margin-bottom: 0;
+}
+
+.my-courses-list {
+  display: grid;
+  gap: var(--space-md);
+}
+
+@media (max-width: 768px) {
+  .my-courses-header {
+    flex-direction: column;
+    gap: var(--space-md);
+    align-items: flex-start;
+  }
+}
