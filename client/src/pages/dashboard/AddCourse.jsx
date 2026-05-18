@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useInstructorCourses } from '../../hooks/useInstructorCourses';
 import { useCategories } from '../../hooks/useCategories';
 import { useCourseBuilder } from '../../hooks/useCourseBuilder';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { HiOutlinePlusCircle, HiOutlineTrash } from 'react-icons/hi';
+import { HiOutlinePlusCircle, HiOutlinePlay, HiOutlineTrash } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 import './AddCourse.css';
 
@@ -21,6 +21,12 @@ const AddCourse = () => {
   const [sectionName, setSectionName] = useState('');
   const [sections, setSections] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+
+  // Lecture (sub-section) state
+  const [activeSectionId, setActiveSectionId] = useState(null);
+  const [lectureData, setLectureData] = useState({ title: '', description: '', timeDuration: '' });
+  const [videoFile, setVideoFile] = useState(null);
+  const [uploadingLecture, setUploadingLecture] = useState(false);
 
   const handleChange = (e) => setCourseData({ ...courseData, [e.target.name]: e.target.value });
 
@@ -49,14 +55,49 @@ const AddCourse = () => {
     } catch {}
   };
 
+  const handleAddLecture = async (e) => {
+    e.preventDefault();
+    if (!activeSectionId || !videoFile) {
+      toast.error('Please select a section and upload a video');
+      return;
+    }
+    setUploadingLecture(true);
+    try {
+      const formData = new FormData();
+      formData.append('sectionId', activeSectionId);
+      formData.append('title', lectureData.title);
+      formData.append('description', lectureData.description);
+      formData.append('timeDuration', lectureData.timeDuration);
+      formData.append('videoFile', videoFile);
+
+      const updatedSection = await addSubSection(formData);
+
+      // Update the section in our local state
+      if (updatedSection) {
+        setSections((prev) =>
+          prev.map((sec) =>
+            sec._id === activeSectionId ? { ...sec, subSection: updatedSection.subSection || [] } : sec
+          )
+        );
+      }
+
+      // Reset lecture form
+      setLectureData({ title: '', description: '', timeDuration: '' });
+      setVideoFile(null);
+      setActiveSectionId(null);
+    } catch {} finally {
+      setUploadingLecture(false);
+    }
+  };
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="dashboard-header"><h1>Create New Course</h1><p>Step {step} of 2</p></div>
 
       {/* Progress */}
-      <div style={{ display: 'flex', gap: 'var(--space-sm)', marginBottom: 'var(--space-2xl)' }}>
+      <div className="add-course-progress">
         {[1, 2].map((s) => (
-          <div key={s} style={{ flex: 1, height: 4, borderRadius: 2, background: s <= step ? 'var(--color-yellow)' : 'var(--color-border)', transition: 'background 0.3s' }} />
+          <div key={s} className={`add-course-progress-bar ${s <= step ? 'active' : 'inactive'}`} />
         ))}
       </div>
 
@@ -76,34 +117,91 @@ const AddCourse = () => {
                 </select>
               </div>
             </div>
-            <div className="form-group"><label className="form-label">Thumbnail *</label><input type="file" accept="image/*" onChange={(e) => setThumbnail(e.target.files[0])} style={{ color: 'var(--color-text-secondary)' }} /></div>
+            <div className="form-group">
+              <label className="form-label">Thumbnail *</label>
+              <input type="file" accept="image/*" onChange={(e) => setThumbnail(e.target.files[0])} style={{ color: 'var(--color-text-secondary)' }} />
+              {thumbnail && <p style={{ fontSize: '0.75rem', color: 'var(--color-green)', marginTop: 'var(--space-xs)' }}>✓ {thumbnail.name}</p>}
+            </div>
             <button className="btn btn-yellow btn-lg" type="submit" disabled={submitting}>{submitting ? <span className="btn-loader" /> : 'Create & Continue'}</button>
           </form>
         </div>
       )}
 
       {step === 2 && (
-        <div className="glass-card" style={{ padding: 'var(--space-2xl)' }}>
-          <h3 style={{ marginBottom: 'var(--space-xl)' }}>Course Content</h3>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem', marginBottom: 'var(--space-lg)' }}>Add sections to organize your course content.</p>
+        <div style={{ display: 'grid', gap: 'var(--space-xl)' }}>
+          {/* Add Sections */}
+          <div className="glass-card" style={{ padding: 'var(--space-2xl)' }}>
+            <h3 style={{ marginBottom: 'var(--space-lg)' }}>Course Sections</h3>
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem', marginBottom: 'var(--space-lg)' }}>Add sections to organize your course, then add video lectures to each section.</p>
 
-          <div style={{ display: 'flex', gap: 'var(--space-sm)', marginBottom: 'var(--space-xl)' }}>
-            <input className="form-input" placeholder="Section name..." value={sectionName} onChange={(e) => setSectionName(e.target.value)} style={{ flex: 1 }} />
-            <button className="btn btn-yellow" onClick={handleAddSection} disabled={builderLoading}><HiOutlinePlusCircle /> Add</button>
+            <div style={{ display: 'flex', gap: 'var(--space-sm)', marginBottom: 'var(--space-xl)' }}>
+              <input className="form-input" placeholder="Section name..." value={sectionName} onChange={(e) => setSectionName(e.target.value)} style={{ flex: 1 }} />
+              <button className="btn btn-yellow" onClick={handleAddSection} disabled={builderLoading}><HiOutlinePlusCircle /> Add</button>
+            </div>
+
+            {sections.length > 0 && (
+              <div style={{ display: 'grid', gap: 'var(--space-sm)' }}>
+                {sections.map((sec, i) => (
+                  <div key={sec._id || i} className="section-item">
+                    <div>
+                      <span style={{ fontWeight: 600 }}>{sec.sectionName || `Section ${i + 1}`}</span>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginLeft: 'var(--space-sm)' }}>
+                        {sec.subSection?.length || 0} lecture{(sec.subSection?.length || 0) !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+                      {sec.subSection?.map((sub) => (
+                        <span key={sub._id} style={{ fontSize: '0.688rem', padding: '2px 8px', background: 'var(--color-green-light)', color: 'var(--color-green)', borderRadius: 'var(--radius-full)' }}>
+                          <HiOutlinePlay style={{ fontSize: '0.625rem' }} /> {sub.title}
+                        </span>
+                      ))}
+                      <button className="btn btn-outline btn-sm" onClick={() => setActiveSectionId(activeSectionId === sec._id ? null : sec._id)}>
+                        {activeSectionId === sec._id ? 'Cancel' : '+ Lecture'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {sections.length > 0 && (
-            <div style={{ display: 'grid', gap: 'var(--space-sm)', marginBottom: 'var(--space-xl)' }}>
-              {sections.map((sec, i) => (
-                <div key={sec._id || i} style={{ padding: 'var(--space-md) var(--space-lg)', background: 'rgba(255,214,10,0.04)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: 500 }}>{sec.sectionName || `Section ${i + 1}`}</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{sec.subSection?.length || 0} lectures</span>
+          {/* Add Lecture (Video Upload) */}
+          {activeSectionId && (
+            <motion.div className="glass-card" style={{ padding: 'var(--space-2xl)' }} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <h3 style={{ marginBottom: 'var(--space-lg)' }}>
+                Add Lecture to "{sections.find((s) => s._id === activeSectionId)?.sectionName}"
+              </h3>
+              <form onSubmit={handleAddLecture}>
+                <div className="form-group">
+                  <label className="form-label">Lecture Title *</label>
+                  <input className="form-input" value={lectureData.title} onChange={(e) => setLectureData({ ...lectureData, title: e.target.value })} required placeholder="e.g. Introduction to React" />
                 </div>
-              ))}
-            </div>
+                <div className="form-group">
+                  <label className="form-label">Description *</label>
+                  <textarea className="form-textarea" value={lectureData.description} onChange={(e) => setLectureData({ ...lectureData, description: e.target.value })} required placeholder="What does this lecture cover?" style={{ minHeight: 80 }} />
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Duration *</label>
+                    <input className="form-input" value={lectureData.timeDuration} onChange={(e) => setLectureData({ ...lectureData, timeDuration: e.target.value })} required placeholder="e.g. 10:30" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Video File *</label>
+                    <input type="file" accept="video/*" onChange={(e) => setVideoFile(e.target.files[0])} style={{ color: 'var(--color-text-secondary)' }} />
+                    {videoFile && <p style={{ fontSize: '0.75rem', color: 'var(--color-green)', marginTop: 'var(--space-xs)' }}>✓ {videoFile.name} ({(videoFile.size / 1024 / 1024).toFixed(1)} MB)</p>}
+                  </div>
+                </div>
+                <button className="btn btn-yellow" type="submit" disabled={uploadingLecture}>
+                  {uploadingLecture ? <><span className="btn-loader" /> Uploading to Cloudinary...</> : <><HiOutlinePlusCircle /> Add Lecture</>}
+                </button>
+              </form>
+            </motion.div>
           )}
 
-          <button className="btn btn-yellow btn-lg" onClick={() => navigate('/dashboard/my-courses')}>Finish & View Courses</button>
+          {/* Finish */}
+          <button className="btn btn-yellow btn-lg" onClick={() => navigate('/dashboard/my-courses')} style={{ justifySelf: 'start' }}>
+            Finish & View Courses
+          </button>
         </div>
       )}
     </motion.div>

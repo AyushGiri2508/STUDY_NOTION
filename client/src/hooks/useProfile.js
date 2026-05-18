@@ -27,6 +27,24 @@ export const useProfile = () => {
     }
   };
 
+  const updateDisplayPicture = async (file) => {
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('displayPicture', file);
+      const res = await profileApi.updateDisplayPicture(formData);
+      // Update user in state with new image
+      setUser(res.data.data);
+      toast.success('Profile photo updated!');
+      return res.data;
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update photo');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const changePassword = async (data) => {
     setLoading(true);
     try {
@@ -81,5 +99,5 @@ export const useProfile = () => {
     }
   };
 
-  return { user, loading, updateProfile, changePassword, deleteAccount, resetPasswordToken, resetPassword };
+  return { user, loading, updateProfile, updateDisplayPicture, changePassword, deleteAccount, resetPasswordToken, resetPassword };
 };

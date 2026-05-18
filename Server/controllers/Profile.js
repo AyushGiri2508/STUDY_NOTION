@@ -1,5 +1,6 @@
 const Profile = require("../models/Profile");
 const User = require("../models/User");
+const { uploadImageToCloudinary } = require("../utils/imageUploader");
 
 // Update Profile
 exports.updateProfile = async (req, res) => {
@@ -37,6 +38,50 @@ exports.updateProfile = async (req, res) => {
       profileDetails,
     });
   } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Update Display Picture (Profile Photo)
+exports.updateDisplayPicture = async (req, res) => {
+  try {
+    const displayPicture = req.files.displayPicture;
+    const userId = req.user.id;
+
+    if (!displayPicture) {
+      return res.status(400).json({
+        success: false,
+        message: "No image file provided",
+      });
+    }
+
+    // Upload to Cloudinary
+    const image = await uploadImageToCloudinary(
+      displayPicture,
+      process.env.FOLDER_NAME,
+      1000,
+      1000
+    );
+
+    console.log("Profile image uploaded:", image.secure_url);
+
+    // Update user's image field in DB
+    const updatedProfile = await User.findByIdAndUpdate(
+      { _id: userId },
+      { image: image.secure_url },
+      { new: true }
+    ).populate("additionalDetails");
+
+    return res.status(200).json({
+      success: true,
+      message: "Image updated successfully",
+      data: updatedProfile,
+    });
+  } catch (error) {
+    console.error("Update display picture error:", error);
     return res.status(500).json({
       success: false,
       message: error.message,
