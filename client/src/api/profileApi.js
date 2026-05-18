@@ -6,9 +6,5 @@ export const getUserDetails = () => API.get('/profile/getUserDetails');
 
 export const updateDisplayPicture = (formData) =>
   API.put('/profile/updateDisplayPicture', formData, {
-    headers: {
-      // Let browser auto-set Content-Type with the correct multipart boundary
-      'Content-Type': undefined,
-    },
     timeout: 30000,
   });

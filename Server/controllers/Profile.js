@@ -6,29 +6,42 @@ const { uploadImageToCloudinary } = require("../utils/imageUploader");
 exports.updateProfile = async (req, res) => {
   try {
     // get data
-    const { dateOfBirth = "", about = "", contactNumber, gender } = req.body;
+    const { dateOfBirth, about, contactNumber, gender } = req.body;
 
     // get user id
     const id = req.user.id;
 
-    // validation
-    if (!contactNumber || !gender || !id) {
+    if (!id) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required",
+        message: "User ID is required",
       });
     }
 
     // find profile
     const userDetails = await User.findById(id);
+    if (!userDetails) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
     const profileId = userDetails.additionalDetails;
     const profileDetails = await Profile.findById(profileId);
 
-    // update profile
-    profileDetails.dateOfBirth = dateOfBirth;
-    profileDetails.about = about;
-    profileDetails.gender = gender;
-    profileDetails.contactNumber = contactNumber;
+    if (!profileDetails) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
+    }
+
+    // update only provided fields (allow partial updates)
+    if (dateOfBirth !== undefined) profileDetails.dateOfBirth = dateOfBirth;
+    if (about !== undefined) profileDetails.about = about;
+    if (gender !== undefined) profileDetails.gender = gender;
+    if (contactNumber !== undefined) profileDetails.contactNumber = contactNumber;
     await profileDetails.save();
 
     // return response
@@ -38,6 +51,7 @@ exports.updateProfile = async (req, res) => {
       profileDetails,
     });
   } catch (error) {
+    console.error("Update profile error:", error);
     return res.status(500).json({
       success: false,
       message: error.message,
