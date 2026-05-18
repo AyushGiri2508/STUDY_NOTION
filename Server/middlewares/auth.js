@@ -4,11 +4,11 @@ require("dotenv").config();
 // auth middleware
 exports.auth = async (req, res, next) => {
   try {
-    // extract token from header, body, or cookies
+    // extract token — prioritize Authorization header (cookies don't work cross-domain)
     const token =
-      req.cookies.token ||
-      req.body.token ||
-      req.header("Authorization")?.replace("Bearer ", "");
+      req.header("Authorization")?.replace("Bearer ", "") ||
+      req.cookies?.token ||
+      req.body?.token;
 
     if (!token) {
       return res.status(401).json({
@@ -20,7 +20,6 @@ exports.auth = async (req, res, next) => {
     // verify token
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      console.log(decoded);
       req.user = decoded;
     } catch (error) {
       return res.status(401).json({
@@ -30,6 +29,7 @@ exports.auth = async (req, res, next) => {
     }
     next();
   } catch (error) {
+    console.error("Auth middleware error:", error.message);
     return res.status(401).json({
       success: false,
       message: "Something went wrong while validating the token",
