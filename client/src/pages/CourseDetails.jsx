@@ -7,8 +7,8 @@ import { useAuthStore } from '../store/AuthContext';
 import RatingStars from '../components/common/RatingStars';
 import Loader from '../components/common/Loader';
 import { motion } from 'framer-motion';
+import { HiOutlineGlobeAlt } from 'react-icons/hi';
 import { 
-  HiOutlineGlobe, 
   HiOutlineClock, 
   HiOutlineChevronDown,
   HiOutlinePlayCircle,
@@ -27,12 +27,12 @@ const CourseDetails = () => {
   const { buyCourse } = usePayment();
   const { user, isAuthenticated, isStudent } = useAuthStore();
 
-  if (loading) return <div className="page-wrapper"><Loader text="Loading course..." /></div>;
-  if (!course) return <div className="page-wrapper"><div className="container empty-state"><h3>Course not found</h3></div></div>;
-
   const [showPlayer, setShowPlayer] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [openSection, setOpenSection] = useState(null);
+
+  if (loading) return <div className="page-wrapper"><Loader text="Loading course..." /></div>;
+  if (!course) return <div className="page-wrapper"><div className="container empty-state"><h3>Course not found</h3></div></div>;
 
   const allLectures = [];
   if (course) {
@@ -318,7 +318,7 @@ const CourseDetails = () => {
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-lg)', flexWrap: 'wrap', marginTop: 'var(--space-md)', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-3xs)' }}><HiOutlineClock /> Last updated {formatDate(course.updatedAt || course.createdAt)}</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-3xs)' }}><HiOutlineGlobe /> English</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-3xs)' }}><HiOutlineGlobeAlt /> English</span>
             </div>
           </div>
 
