@@ -1,8 +1,10 @@
 import { useParams, Link } from 'react-router-dom';
+import { useState } from 'react';
 import { useCourseDetails } from '../hooks/useCourseDetails';
 import { useCart } from '../hooks/useCart';
 import { usePayment } from '../hooks/usePayment';
 import { useAuthStore } from '../store/AuthContext';
+import { useCourseBuilder } from '../hooks/useCourseBuilder';
 import CourseAccordion from '../components/course/CourseAccordion';
 import RatingStars from '../components/common/RatingStars';
 import Loader from '../components/common/Loader';
@@ -13,14 +15,24 @@ import './CourseDetails.css';
 
 const CourseDetails = () => {
   const { courseId } = useParams();
-  const { course, loading } = useCourseDetails(courseId);
+  const { course, loading, refetch } = useCourseDetails(courseId);
   const { addToCart, isInCart } = useCart();
   const { buyCourse } = usePayment();
   const { user, isAuthenticated, isStudent } = useAuthStore();
 
+  // Course Builder states for Instructor Panel
+  const { addSection, addSubSection, loading: builderLoading } = useCourseBuilder();
+  const [sectionName, setSectionName] = useState('');
+  const [activeSectionId, setActiveSectionId] = useState(null);
+  const [lectureData, setLectureData] = useState({ title: '', description: '', timeDuration: '' });
+  const [mediaType, setMediaType] = useState('video'); // 'video' | 'document'
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
   if (loading) return <div className="page-wrapper"><Loader text="Loading course..." /></div>;
   if (!course) return <div className="page-wrapper"><div className="container empty-state"><h3>Course not found</h3></div></div>;
 
+  const isInstructorOfCourse = isAuthenticated && user?.accountType === 'Instructor' && (course.instructor?._id === user?._id || course.instructor === user?._id);
   const isEnrolled = course.studentEnrolled?.some((s) => s === user?._id || s?._id === user?._id);
   const avgRating = course.ratingAndReviews?.length > 0
     ? (course.ratingAndReviews.reduce((a, r) => a + (r.rating || 0), 0) / course.ratingAndReviews.length).toFixed(1) : 0;
@@ -34,6 +46,51 @@ const CourseDetails = () => {
   const handleBuyNow = () => {
     if (!isAuthenticated) { toast.error('Please login first'); return; }
     buyCourse(course._id);
+  };
+
+  const handleAddSection = async () => {
+    if (!sectionName.trim()) {
+      toast.error('Please enter section name');
+      return;
+    }
+    try {
+      await addSection({ sectionName, courseId: course._id });
+      setSectionName('');
+      toast.success('Section added successfully');
+      refetch();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleAddLecture = async (e) => {
+    e.preventDefault();
+    if (!activeSectionId || !uploadFile) {
+      toast.error('Please select a section and upload a file');
+      return;
+    }
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('sectionId', activeSectionId);
+      formData.append('title', lectureData.title);
+      formData.append('description', lectureData.description);
+      formData.append('timeDuration', mediaType === 'document' ? 'Doc' : lectureData.timeDuration || '5:00');
+      formData.append('videoFile', uploadFile);
+
+      await addSubSection(formData);
+
+      // Reset states
+      setLectureData({ title: '', description: '', timeDuration: '' });
+      setUploadFile(null);
+      setActiveSectionId(null);
+      toast.success('Lecture/resource uploaded successfully');
+      refetch();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -63,7 +120,15 @@ const CourseDetails = () => {
                 <img src={course.thumbnail || ''} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <p style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', fontWeight: 800, color: 'var(--color-yellow)', marginBottom: 'var(--space-lg)' }}>₹{course.price}</p>
-              {isEnrolled ? (
+              {isInstructorOfCourse ? (
+                <button
+                  className="btn btn-yellow btn-lg"
+                  onClick={() => document.getElementById('instructor-panel')?.scrollIntoView({ behavior: 'smooth' })}
+                  style={{ width: '100%' }}
+                >
+                  Manage Lectures
+                </button>
+              ) : isEnrolled ? (
                 <Link to={`/dashboard/view-course/${course._id}`} className="btn btn-yellow btn-lg" style={{ width: '100%' }}>Go to Course</Link>
               ) : isStudent ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
@@ -94,7 +159,7 @@ const CourseDetails = () => {
           {/* Course Content */}
           <section style={{ marginBottom: 'var(--space-2xl)' }}>
             <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-lg)' }}>Course Content</h2>
-            <CourseAccordion sections={course.courseContent || []} />
+            <CourseAccordion sections={course.courseContent || []} canViewContent={isEnrolled || isInstructorOfCourse} />
           </section>
 
           {/* Reviews */}
@@ -116,7 +181,162 @@ const CourseDetails = () => {
           )}
         </div>
       </div>
+
+      {/* Instructor Panel */}
+      {isInstructorOfCourse && (
+        <div id="instructor-panel" className="container" style={{ paddingBottom: 'var(--space-3xl)' }}>
+          <div style={{ maxWidth: 760, borderTop: '1px solid var(--color-border)', paddingTop: 'var(--space-2xl)' }}>
+            <h2 style={{ fontSize: '1.5rem', marginBottom: 'var(--space-sm)', color: 'var(--color-yellow)' }}>
+              Instructor Control Panel
+            </h2>
+            <p style={{ color: 'var(--color-text-secondary)', marginBottom: 'var(--space-xl)', fontSize: '0.875rem' }}>
+              Manage sections, upload new video lectures, or add resource documents for this course.
+            </p>
+
+            <div style={{ display: 'grid', gap: 'var(--space-xl)' }}>
+              {/* Add Sections */}
+              <div className="glass-card" style={{ padding: 'var(--space-xl)' }}>
+                <h3 style={{ fontSize: '1.1rem', marginBottom: 'var(--space-md)' }}>Add New Section</h3>
+                <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                  <input
+                    className="form-input"
+                    placeholder="e.g. Section 4: Advanced Concepts"
+                    value={sectionName}
+                    onChange={(e) => setSectionName(e.target.value)}
+                    style={{ flex: 1 }}
+                  />
+                  <button className="btn btn-yellow" onClick={handleAddSection} disabled={builderLoading}>
+                    Add Section
+                  </button>
+                </div>
+              </div>
+
+              {/* Add Lecture / Subsection */}
+              <div className="glass-card" style={{ padding: 'var(--space-xl)' }}>
+                <h3 style={{ fontSize: '1.1rem', marginBottom: 'var(--space-md)' }}>Upload Lecture or Document</h3>
+                <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.813rem', marginBottom: 'var(--space-md)' }}>
+                  Select a section, specify details, choose between video or document, and upload your file.
+                </p>
+
+                <form onSubmit={handleAddLecture}>
+                  <div className="form-group">
+                    <label className="form-label">Select Target Section *</label>
+                    <select
+                      className="form-select"
+                      value={activeSectionId || ''}
+                      onChange={(e) => setActiveSectionId(e.target.value)}
+                      required
+                    >
+                      <option value="">-- Select Section --</option>
+                      {course.courseContent?.map((sec) => (
+                        <option key={sec._id} value={sec._id}>
+                          {sec.sectionName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {activeSectionId && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                      <div className="form-group">
+                        <label className="form-label">Title *</label>
+                        <input
+                          className="form-input"
+                          value={lectureData.title}
+                          onChange={(e) => setLectureData({ ...lectureData, title: e.target.value })}
+                          required
+                          placeholder="e.g. Lecture 3: Understanding State"
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label className="form-label">Description *</label>
+                        <textarea
+                          className="form-textarea"
+                          value={lectureData.description}
+                          onChange={(e) => setLectureData({ ...lectureData, description: e.target.value })}
+                          required
+                          placeholder="Describe the topics covered or contents of the file..."
+                          style={{ minHeight: 80 }}
+                        />
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
+                        <div className="form-group">
+                          <label className="form-label">Media Type *</label>
+                          <select
+                            className="form-select"
+                            value={mediaType}
+                            onChange={(e) => {
+                              setMediaType(e.target.value);
+                              setUploadFile(null);
+                            }}
+                          >
+                            <option value="video">🎥 Video Lecture</option>
+                            <option value="document">📄 PDF / Document Resource</option>
+                          </select>
+                        </div>
+
+                        {mediaType === 'video' ? (
+                          <div className="form-group">
+                            <label className="form-label">Time Duration *</label>
+                            <input
+                              className="form-input"
+                              value={lectureData.timeDuration}
+                              onChange={(e) => setLectureData({ ...lectureData, timeDuration: e.target.value })}
+                              required
+                              placeholder="e.g. 12:45"
+                            />
+                          </div>
+                        ) : (
+                          <div className="form-group">
+                            <label className="form-label">Resource Label</label>
+                            <input
+                              className="form-input"
+                              disabled
+                              value="PDF Document"
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="form-group" style={{ marginBottom: 'var(--space-xl)' }}>
+                        <label className="form-label">
+                          {mediaType === 'video' ? 'Upload Video Lecture *' : 'Upload Resource PDF/Doc *'}
+                        </label>
+                        <input
+                          type="file"
+                          accept={mediaType === 'video' ? 'video/*' : '.pdf,.doc,.docx,.zip,.txt'}
+                          onChange={(e) => setUploadFile(e.target.files[0])}
+                          required
+                          style={{ color: 'var(--color-text-secondary)' }}
+                        />
+                        {uploadFile && (
+                          <p style={{ fontSize: '0.75rem', color: 'var(--color-green)', marginTop: 'var(--space-xs)' }}>
+                            ✓ {uploadFile.name} ({(uploadFile.size / 1024 / 1024).toFixed(1)} MB)
+                          </p>
+                        )}
+                      </div>
+
+                      <button className="btn btn-yellow" type="submit" disabled={uploading}>
+                        {uploading ? (
+                          <>
+                            <span className="btn-loader" /> Uploading to Cloudinary...
+                          </>
+                        ) : (
+                          <>Upload & Add to Section</>
+                        )}
+                      </button>
+                    </motion.div>
+                  )}
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
 export default CourseDetails;

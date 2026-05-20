@@ -6,22 +6,23 @@ export const useCourseDetails = (courseId) => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchCourse = async () => {
     if (!courseId) return;
-    const fetch = async () => {
-      setLoading(true);
-      try {
-        const res = await courseApi.getCourseDetails(courseId);
-        const data = res.data.data;
-        setCourse(Array.isArray(data) ? data[0] : data);
-      } catch (err) {
-        toast.error('Failed to load course details');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetch();
+    setLoading(true);
+    try {
+      const res = await courseApi.getCourseDetails(courseId);
+      const data = res.data.data;
+      setCourse(Array.isArray(data) ? data[0] : data);
+    } catch (err) {
+      toast.error('Failed to load course details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourse();
   }, [courseId]);
 
-  return { course, loading };
+  return { course, loading, refetch: fetchCourse, setCourse };
 };

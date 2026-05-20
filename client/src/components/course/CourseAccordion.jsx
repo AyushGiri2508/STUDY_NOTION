@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { HiOutlineChevronDown, HiOutlinePlayCircle } from 'react-icons/hi2';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const CourseAccordion = ({ sections = [] }) => {
+const CourseAccordion = ({ sections = [], canViewContent = false }) => {
   const [openSection, setOpenSection] = useState(null);
   const totalLectures = sections.reduce((acc, s) => acc + (s.subSection?.length || 0), 0);
 
@@ -23,13 +23,54 @@ const CourseAccordion = ({ sections = [] }) => {
           <AnimatePresence>
             {openSection === i && (
               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}>
-                {(section.subSection || []).map((sub) => (
-                  <div key={sub._id} style={{ padding: '0.625rem var(--space-lg) 0.625rem calc(var(--space-lg) + 1rem)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', borderTop: '1px solid var(--color-border)', color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>
-                    <HiOutlinePlayCircle style={{ color: 'var(--color-yellow)', flexShrink: 0 }} />
-                    <span style={{ flex: 1 }}>{sub.title}</span>
-                    {sub.timeDuration && <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{sub.timeDuration}</span>}
-                  </div>
-                ))}
+                {(section.subSection || []).map((sub) => {
+                  const isDoc = sub.timeDuration === 'Doc';
+                  return canViewContent ? (
+                    <a
+                      key={sub._id}
+                      href={sub.videoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        padding: '0.625rem var(--space-lg) 0.625rem calc(var(--space-lg) + 1rem)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 'var(--space-sm)',
+                        borderTop: '1px solid var(--color-border)',
+                        color: 'var(--color-text-secondary)',
+                        fontSize: '0.875rem',
+                        textDecoration: 'none',
+                        transition: 'background-color 0.2s',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 214, 10, 0.05)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                      <HiOutlinePlayCircle style={{ color: isDoc ? 'var(--color-green)' : 'var(--color-yellow)', flexShrink: 0 }} />
+                      <span style={{ flex: 1, color: 'var(--color-text-primary)' }}>
+                        {sub.title} <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>({isDoc ? 'Resource File' : 'Video'})</span>
+                      </span>
+                      {sub.timeDuration && <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{sub.timeDuration}</span>}
+                    </a>
+                  ) : (
+                    <div
+                      key={sub._id}
+                      style={{
+                        padding: '0.625rem var(--space-lg) 0.625rem calc(var(--space-lg) + 1rem)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 'var(--space-sm)',
+                        borderTop: '1px solid var(--color-border)',
+                        color: 'var(--color-text-secondary)',
+                        fontSize: '0.875rem'
+                      }}
+                    >
+                      <HiOutlinePlayCircle style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
+                      <span style={{ flex: 1 }}>{sub.title}</span>
+                      {sub.timeDuration && <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{sub.timeDuration}</span>}
+                    </div>
+                  );
+                })}
               </motion.div>
             )}
           </AnimatePresence>
