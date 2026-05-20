@@ -50,5 +50,5 @@ export const useCategories = () => {
     fetchCategories();
   }, []);
 
-  return { categories, loading, categoryData, fetchCategories, fetchCategoryPage };
+  return { categories, loading, categoryData, setCategoryData, fetchCategories, fetchCategoryPage };
 };

@@ -8,10 +8,14 @@ import './Catalog.css';
 
 const Catalog = () => {
   const { categoryId } = useParams();
-  const { categories, categoryData, loading, fetchCategoryPage } = useCategories();
+  const { categories, categoryData, setCategoryData, loading, fetchCategoryPage } = useCategories();
 
   useEffect(() => {
-    if (categoryId) fetchCategoryPage(categoryId);
+    if (categoryId) {
+      fetchCategoryPage(categoryId);
+    } else {
+      setCategoryData(null);
+    }
   }, [categoryId]);
 
   if (loading) return <div className="page-wrapper"><Loader text="Loading catalog..." /></div>;
