@@ -8,9 +8,8 @@ import RatingStars from '../components/common/RatingStars';
 import Loader from '../components/common/Loader';
 import { motion } from 'framer-motion';
 import { 
-  HiOutlineGlobeAlt, 
+  HiOutlineGlobe, 
   HiOutlineClock, 
-  HiArrowLeft,
   HiOutlineChevronDown,
   HiOutlinePlayCircle,
   HiOutlineDocumentText,
@@ -93,7 +92,7 @@ const CourseDetails = () => {
                 className="btn btn-outline btn-sm"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
               >
-                <HiArrowLeft /> Back to Course Info
+                <HiOutlineArrowLeft /> Back to Course Info
               </button>
               <span style={{ color: 'var(--color-border)' }}>|</span>
               <span style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>{course.courseName}</span>
@@ -295,7 +294,7 @@ const CourseDetails = () => {
         <div className="container course-hero-grid">
           <div className="course-hero-content">
             <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2xs)', color: 'var(--color-text-secondary)', textDecoration: 'none', fontSize: '0.875rem', marginBottom: 'var(--space-md)' }}>
-              <HiArrowLeft /> Back
+              <HiOutlineArrowLeft /> Back
             </Link>
             <span style={{ background: 'rgba(255,214,10,0.1)', color: 'var(--color-yellow)', padding: '4px 12px', borderRadius: '50px', fontSize: '0.75rem', fontWeight: 600, display: 'inline-block', marginBottom: 'var(--space-sm)' }}>
               {course.category?.name || 'Course'}
@@ -319,7 +318,7 @@ const CourseDetails = () => {
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-lg)', flexWrap: 'wrap', marginTop: 'var(--space-md)', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-3xs)' }}><HiOutlineClock /> Last updated {formatDate(course.updatedAt || course.createdAt)}</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-3xs)' }}><HiOutlineGlobeAlt /> English</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-3xs)' }}><HiOutlineGlobe /> English</span>
             </div>
           </div>
 
