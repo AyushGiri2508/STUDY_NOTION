@@ -8,6 +8,21 @@ exports.uploadImageToCloudinary = async (file, folder, height, quality) => {
   if (quality) {
     options.quality = quality;
   }
-  options.resource_type = "auto";
+  
+  // Set resource_type to 'raw' for PDFs and documents to bypass default delivery restrictions
+  const fileName = file.name ? file.name.toLowerCase() : "";
+  const isRaw = fileName.endsWith(".pdf") || 
+                fileName.endsWith(".doc") || 
+                fileName.endsWith(".docx") || 
+                fileName.endsWith(".zip") || 
+                fileName.endsWith(".txt") ||
+                fileName.endsWith(".csv");
+
+  if (isRaw) {
+    options.resource_type = "raw";
+  } else {
+    options.resource_type = "auto";
+  }
+
   return await cloudinary.uploader.upload(file.tempFilePath, options);
 };
