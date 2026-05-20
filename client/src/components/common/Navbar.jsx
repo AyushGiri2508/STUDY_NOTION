@@ -15,23 +15,20 @@ const Navbar = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [catalogOpen, setCatalogOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef(null);
-  const catalogRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setDropdownOpen(false);
-      if (catalogRef.current && !catalogRef.current.contains(e.target)) setCatalogOpen(false);
     };
     window.addEventListener('scroll', handleScroll);
     document.addEventListener('mousedown', handleClickOutside);
     return () => { window.removeEventListener('scroll', handleScroll); document.removeEventListener('mousedown', handleClickOutside); };
   }, []);
 
-  useEffect(() => { setMobileOpen(false); setCatalogOpen(false); setDropdownOpen(false); }, [location.pathname]);
+  useEffect(() => { setMobileOpen(false); setDropdownOpen(false); }, [location.pathname]);
 
   const handleLogout = () => { logout(); setDropdownOpen(false); setMobileOpen(false); };
 
@@ -46,20 +43,7 @@ const Navbar = () => {
         <div className="navbar-links">
           <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>
 
-          <div className="nav-dropdown" ref={catalogRef}>
-            <button className={`nav-link ${location.pathname.startsWith('/catalog') ? 'active' : ''}`} onClick={() => setCatalogOpen(!catalogOpen)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
-              Catalog <HiOutlineChevronDown className={`dropdown-arrow ${catalogOpen ? 'open' : ''}`} />
-            </button>
-            <AnimatePresence>
-              {catalogOpen && (
-                <motion.div className="nav-dropdown-menu" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.15 }}>
-                  {categories.length > 0 ? categories.map((cat) => (
-                    <Link key={cat._id} to={`/catalog/${cat._id}`} className="nav-dropdown-item">{cat.name}</Link>
-                  )) : <div className="nav-dropdown-item" style={{ color: 'var(--color-text-muted)' }}>No categories</div>}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          <Link to="/catalog" className={`nav-link ${location.pathname.startsWith('/catalog') ? 'active' : ''}`}>Catalog</Link>
 
           <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}>About</Link>
           <Link to="/contact" className={`nav-link ${location.pathname === '/contact' ? 'active' : ''}`}>Contact</Link>
@@ -118,7 +102,7 @@ const Navbar = () => {
         {mobileOpen && (
           <motion.div className="mobile-menu" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
             <Link to="/" className="mobile-link">Home</Link>
-            {categories.map((cat) => <Link key={cat._id} to={`/catalog/${cat._id}`} className="mobile-link">{cat.name}</Link>)}
+            <Link to="/catalog" className="mobile-link">Catalog</Link>
             <Link to="/about" className="mobile-link">About</Link>
             <Link to="/contact" className="mobile-link">Contact</Link>
             {isAuthenticated && (

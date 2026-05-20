@@ -24,16 +24,55 @@ const Catalog = () => {
       <div className="container">
         {/* Category Header */}
         <div style={{ marginBottom: 'var(--space-3xl)' }}>
-          <p className="back-link"><Link to="/">Home</Link> / <Link to="/catalog">Catalog</Link> / <span style={{ color: 'var(--color-yellow)' }}>{selected?.name || 'Browse'}</span></p>
-          <h1 style={{ fontSize: '2.25rem', marginBottom: 'var(--space-sm)' }}>{selected?.name || 'Explore Courses'}</h1>
-          <p style={{ color: 'var(--color-text-secondary)', maxWidth: 600 }}>{selected?.description || 'Browse all categories and find the perfect course for you.'}</p>
+          <p className="back-link"><Link to="/">Home</Link> / <Link to="/catalog">Catalog</Link>{selected && <> / <span style={{ color: 'var(--color-yellow)' }}>{selected.name}</span></>}</p>
+          <h1 style={{ fontSize: '2.25rem', marginBottom: 'var(--space-sm)', color: selected ? 'var(--color-text-primary)' : 'var(--color-yellow)' }}>
+            {selected?.name || 'Explore Course Catalog'}
+          </h1>
+          <p style={{ color: 'var(--color-text-secondary)', maxWidth: 600 }}>
+            {selected?.description || 'Discover premium courses taught by industry professionals. Select a category below to get started.'}
+          </p>
         </div>
 
-        {/* Category Tabs */}
+        {/* Category Cards Grid */}
         {!categoryId && (
-          <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap', marginBottom: 'var(--space-2xl)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-lg)', marginBottom: 'var(--space-3xl)' }}>
             {categories.map((cat) => (
-              <Link key={cat._id} to={`/catalog/${cat._id}`} className="btn btn-dark btn-sm">{cat.name}</Link>
+              <Link 
+                key={cat._id} 
+                to={`/catalog/${cat._id}`} 
+                className="glass-card" 
+                style={{ 
+                  padding: 'var(--space-xl)', 
+                  textDecoration: 'none', 
+                  color: 'inherit',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  minHeight: '180px',
+                  transition: 'transform 0.2s, border-color 0.2s',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.borderColor = 'var(--color-yellow)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.borderColor = 'rgba(71, 165, 255, 0.1)';
+                }}
+              >
+                <div>
+                  <h3 style={{ fontSize: '1.25rem', color: 'var(--color-text-primary)', marginBottom: 'var(--space-xs)' }}>
+                    {cat.name}
+                  </h3>
+                  <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
+                    {cat.description || 'Browse high-quality courses under this category.'}
+                  </p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2xs)', color: 'var(--color-yellow)', fontWeight: 600, fontSize: '0.875rem', marginTop: 'var(--space-md)' }}>
+                  Explore Courses →
+                </div>
+              </Link>
             ))}
           </div>
         )}
