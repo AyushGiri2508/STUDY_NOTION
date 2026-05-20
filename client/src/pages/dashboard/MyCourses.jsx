@@ -33,7 +33,10 @@ const MyCourses = () => {
                   <span className={`badge ${course.status === 'Published' ? 'badge-green' : 'badge-yellow'}`}>{course.status || 'Draft'}</span>
                 </div>
               </div>
-              <Link to={`/course/${course._id}`} className="btn btn-outline btn-sm">View</Link>
+              <div style={{ display: 'flex', gap: 'var(--space-xs)' }}>
+                <Link to={`/course/${course._id}`} className="btn btn-outline btn-sm">View</Link>
+                <Link to={`/dashboard/manage-course/${course._id}`} className="btn btn-yellow btn-sm">Manage</Link>
+              </div>
             </div>
           ))}
         </div>
