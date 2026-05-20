@@ -104,7 +104,8 @@ exports.updateSubSection = async (req, res) => {
 // TODO: Delete SubSection
 exports.deleteSubSection = async (req, res) => {
   try {
-    const { subSectionId, sectionId } = req.params;
+    const subSectionId = req.body.subSectionId || req.params.subSectionId;
+    const sectionId = req.body.sectionId || req.params.sectionId;
 
     // remove subsection reference from section
     await Section.findByIdAndUpdate(sectionId, {

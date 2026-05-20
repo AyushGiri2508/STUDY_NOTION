@@ -21,13 +21,23 @@ const CourseDetails = () => {
   const { user, isAuthenticated, isStudent } = useAuthStore();
 
   // Course Builder states for Instructor Panel
-  const { addSection, addSubSection, loading: builderLoading } = useCourseBuilder();
+  const { 
+    addSection, 
+    updateSection, 
+    deleteSection, 
+    addSubSection, 
+    updateSubSection, 
+    deleteSubSection, 
+    loading: builderLoading 
+  } = useCourseBuilder();
   const [sectionName, setSectionName] = useState('');
   const [activeSectionId, setActiveSectionId] = useState(null);
   const [lectureData, setLectureData] = useState({ title: '', description: '', timeDuration: '' });
   const [mediaType, setMediaType] = useState('video'); // 'video' | 'document'
   const [uploadFile, setUploadFile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editSubSectionId, setEditSubSectionId] = useState(null);
 
   if (loading) return <div className="page-wrapper"><Loader text="Loading course..." /></div>;
   if (!course) return <div className="page-wrapper"><div className="container empty-state"><h3>Course not found</h3></div></div>;
@@ -63,10 +73,73 @@ const CourseDetails = () => {
     }
   };
 
+  const handleRenameSection = async (sectionId, currentName) => {
+    const newName = window.prompt("Enter new section name:", currentName);
+    if (newName && newName.trim() !== "" && newName !== currentName) {
+      try {
+        await updateSection({ sectionId, sectionName: newName });
+        refetch();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  const handleDeleteSection = async (sectionId) => {
+    if (window.confirm("Are you sure you want to delete this section? This will delete all its lectures.")) {
+      try {
+        await deleteSection({ sectionId });
+        refetch();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  const handleEditSubSection = (sectionId, sub) => {
+    setEditMode(true);
+    setEditSubSectionId(sub._id);
+    setActiveSectionId(sectionId);
+    setMediaType(sub.timeDuration === 'Doc' ? 'document' : 'video');
+    setLectureData({
+      title: sub.title,
+      description: sub.description,
+      timeDuration: sub.timeDuration === 'Doc' ? '' : sub.timeDuration || ''
+    });
+    setUploadFile(null);
+    
+    // Scroll to the edit form
+    document.getElementById('lecture-form-card')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleDeleteSubSection = async (subSectionId, sectionId) => {
+    if (window.confirm("Are you sure you want to delete this lecture/material?")) {
+      try {
+        await deleteSubSection({ subSectionId, sectionId });
+        refetch();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditMode(false);
+    setEditSubSectionId(null);
+    setActiveSectionId(null);
+    setMediaType('video');
+    setLectureData({ title: '', description: '', timeDuration: '' });
+    setUploadFile(null);
+  };
+
   const handleAddLecture = async (e) => {
     e.preventDefault();
-    if (!activeSectionId || !uploadFile) {
-      toast.error('Please select a section and upload a file');
+    if (!activeSectionId) {
+      toast.error('Please select a target section');
+      return;
+    }
+    if (!editMode && !uploadFile) {
+      toast.error('Please upload a file');
       return;
     }
     setUploading(true);
@@ -76,15 +149,24 @@ const CourseDetails = () => {
       formData.append('title', lectureData.title);
       formData.append('description', lectureData.description);
       formData.append('timeDuration', mediaType === 'document' ? 'Doc' : lectureData.timeDuration || '5:00');
-      formData.append('videoFile', uploadFile);
+      
+      if (uploadFile) {
+        formData.append('videoFile', uploadFile);
+      }
 
-      await addSubSection(formData);
+      if (editMode) {
+        formData.append('subSectionId', editSubSectionId);
+        await updateSubSection(formData);
+      } else {
+        await addSubSection(formData);
+      }
 
       // Reset states
       setLectureData({ title: '', description: '', timeDuration: '' });
       setUploadFile(null);
       setActiveSectionId(null);
-      toast.success('Lecture/resource uploaded successfully');
+      setEditMode(false);
+      setEditSubSectionId(null);
       refetch();
     } catch (err) {
       console.error(err);
@@ -159,7 +241,15 @@ const CourseDetails = () => {
           {/* Course Content */}
           <section style={{ marginBottom: 'var(--space-2xl)' }}>
             <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-lg)' }}>Course Content</h2>
-            <CourseAccordion sections={course.courseContent || []} canViewContent={isEnrolled || isInstructorOfCourse} />
+            <CourseAccordion 
+              sections={course.courseContent || []} 
+              canViewContent={isEnrolled || isInstructorOfCourse} 
+              isInstructor={isInstructorOfCourse}
+              onRenameSection={handleRenameSection}
+              onDeleteSection={handleDeleteSection}
+              onEditSubSection={handleEditSubSection}
+              onDeleteSubSection={handleDeleteSubSection}
+            />
           </section>
 
           {/* Reviews */}
@@ -211,11 +301,15 @@ const CourseDetails = () => {
                 </div>
               </div>
 
-              {/* Add Lecture / Subsection */}
-              <div className="glass-card" style={{ padding: 'var(--space-xl)' }}>
-                <h3 style={{ fontSize: '1.1rem', marginBottom: 'var(--space-md)' }}>Upload Lecture or Document</h3>
+              {/* Add / Edit Lecture / Subsection */}
+              <div id="lecture-form-card" className="glass-card" style={{ padding: 'var(--space-xl)' }}>
+                <h3 style={{ fontSize: '1.1rem', marginBottom: 'var(--space-md)' }}>
+                  {editMode ? 'Edit Lecture or Document' : 'Upload Lecture or Document'}
+                </h3>
                 <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.813rem', marginBottom: 'var(--space-md)' }}>
-                  Select a section, specify details, choose between video or document, and upload your file.
+                  {editMode 
+                    ? 'Modify lecture details below. Uploading a new file is optional if you only want to rename or describe.' 
+                    : 'Select a section, specify details, choose between video or document, and upload your file.'}
                 </p>
 
                 <form onSubmit={handleAddLecture}>
@@ -226,6 +320,7 @@ const CourseDetails = () => {
                       value={activeSectionId || ''}
                       onChange={(e) => setActiveSectionId(e.target.value)}
                       required
+                      disabled={editMode}
                     >
                       <option value="">-- Select Section --</option>
                       {course.courseContent?.map((sec) => (
@@ -302,13 +397,15 @@ const CourseDetails = () => {
 
                       <div className="form-group" style={{ marginBottom: 'var(--space-xl)' }}>
                         <label className="form-label">
-                          {mediaType === 'video' ? 'Upload Video Lecture *' : 'Upload Resource PDF/Doc *'}
+                          {mediaType === 'video' 
+                            ? `Upload Video Lecture ${editMode ? '(Optional)' : '*'}` 
+                            : `Upload Resource PDF/Doc ${editMode ? '(Optional)' : '*'}`}
                         </label>
                         <input
                           type="file"
                           accept={mediaType === 'video' ? 'video/*' : '.pdf,.doc,.docx,.zip,.txt'}
                           onChange={(e) => setUploadFile(e.target.files[0])}
-                          required
+                          required={!editMode}
                           style={{ color: 'var(--color-text-secondary)' }}
                         />
                         {uploadFile && (
@@ -318,15 +415,22 @@ const CourseDetails = () => {
                         )}
                       </div>
 
-                      <button className="btn btn-yellow" type="submit" disabled={uploading}>
-                        {uploading ? (
-                          <>
-                            <span className="btn-loader" /> Uploading to Cloudinary...
-                          </>
-                        ) : (
-                          <>Upload & Add to Section</>
+                      <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+                        <button className="btn btn-yellow" type="submit" disabled={uploading}>
+                          {uploading ? (
+                            <>
+                              <span className="btn-loader" /> Saving...
+                            </>
+                          ) : (
+                            <>{editMode ? 'Update Lecture' : 'Upload & Add to Section'}</>
+                          )}
+                        </button>
+                        {editMode && (
+                          <button className="btn btn-outline" type="button" onClick={handleCancelEdit} disabled={uploading}>
+                            Cancel Edit
+                          </button>
                         )}
-                      </button>
+                      </div>
                     </motion.div>
                   )}
                 </form>
