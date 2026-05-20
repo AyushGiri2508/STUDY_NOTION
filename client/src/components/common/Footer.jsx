@@ -22,7 +22,6 @@ const Footer = () => (
         <div className="footer-links-group">
           <h4>Support</h4>
           <Link to="/help-center">Help Center</Link>
-          <Link to="/forgot-password">Reset Password</Link>
         </div>
         <div className="footer-links-group">
           <h4>Legal</h4>
