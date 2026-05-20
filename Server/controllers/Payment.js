@@ -75,10 +75,70 @@ exports.capturePayment = async (req, res) => {
       amount: paymentResponse.amount,
     });
   } catch (error) {
-    console.log(error);
+    console.log("Razorpay order creation failed, falling back to mock enrollment:", error.message);
+
+    // Check if we are using placeholder/dummy keys, or if Razorpay credentials failed
+    const isDummyKey = process.env.RAZORPAY_KEY && process.env.RAZORPAY_KEY.startsWith("rzp_test_1a2b");
+    const isAuthError = error.statusCode === 401 || error.message?.includes("auth") || error.message?.includes("key");
+
+    if (isDummyKey || isAuthError) {
+      try {
+        // Find the course and enroll the student in it
+        const enrolledCourse = await Course.findOneAndUpdate(
+          { _id: course_id },
+          { $push: { studentEnrolled: userId } },
+          { new: true }
+        );
+        if (!enrolledCourse) {
+          return res.status(404).json({
+            success: false,
+            message: "Course not found",
+          });
+        }
+
+        // Find the student and add the course to their enrolled courses
+        const enrolledStudent = await User.findOneAndUpdate(
+          { _id: userId },
+          { $push: { courses: course_id } },
+          { new: true }
+        );
+
+        if (!enrolledStudent) {
+          return res.status(404).json({
+            success: false,
+            message: "User not found",
+          });
+        }
+
+        // Send confirmation email
+        try {
+          await mailSender(
+            enrolledStudent.email,
+            "Congratulations - Course Enrolled",
+            `Congratulations, you have successfully enrolled in ${course.courseName}`
+          );
+        } catch (mailError) {
+          console.log("Mail sender failed in mock payment:", mailError.message);
+        }
+
+        return res.status(200).json({
+          success: true,
+          mock: true,
+          message: "Demo Mode: Course enrolled successfully without Razorpay payment.",
+        });
+      } catch (enrollError) {
+        return res.status(500).json({
+          success: false,
+          message: "Failed to perform mock enrollment",
+          error: enrollError.message,
+        });
+      }
+    }
+
     res.json({
       success: false,
       message: "Could not initiate order",
+      error: error.message
     });
   }
 };

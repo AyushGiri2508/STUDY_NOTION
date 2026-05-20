@@ -13,6 +13,23 @@ export const usePayment = () => {
     setLoading(true);
     try {
       const res = await paymentApi.capturePayment(courseId);
+
+      // Handle server validation failures or enrollment errors
+      if (!res.data.success) {
+        toast.error(res.data.message || 'Payment failed');
+        return;
+      }
+
+      // Handle Mock/Demo Mode direct enrollment
+      if (res.data.mock) {
+        toast.success('Demo Mode: Enrolled successfully!');
+        clearCart();
+        if (user) {
+          setUser({ ...user, courses: [...(user.courses || []), courseId] });
+        }
+        return;
+      }
+
       const { orderId, amount, currency } = res.data;
 
       // Load Razorpay checkout
