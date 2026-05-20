@@ -18,6 +18,10 @@ import Catalog from './pages/Catalog';
 import CourseDetails from './pages/CourseDetails';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import HelpCenter from './pages/HelpCenter';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import CookiePolicy from './pages/CookiePolicy';
 
 import DashboardLayout from './pages/dashboard/DashboardLayout';
 import MyProfile from './pages/dashboard/MyProfile';
@@ -48,6 +52,10 @@ function App() {
             <Route path="/course/:courseId" element={<CourseDetails />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/help-center" element={<HelpCenter />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/cookie-policy" element={<CookiePolicy />} />
 
             {/* Dashboard — Protected */}
             <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>

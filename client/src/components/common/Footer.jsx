@@ -21,14 +21,14 @@ const Footer = () => (
         </div>
         <div className="footer-links-group">
           <h4>Support</h4>
-          <Link to="/contact">Help Center</Link>
+          <Link to="/help-center">Help Center</Link>
           <Link to="/forgot-password">Reset Password</Link>
         </div>
         <div className="footer-links-group">
           <h4>Legal</h4>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Cookie Policy</a>
+          <Link to="/privacy-policy">Privacy Policy</Link>
+          <Link to="/terms-of-service">Terms of Service</Link>
+          <Link to="/cookie-policy">Cookie Policy</Link>
         </div>
       </div>
       <div className="footer-bottom">
