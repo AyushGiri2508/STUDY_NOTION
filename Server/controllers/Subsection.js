@@ -106,20 +106,25 @@ exports.deleteSubSection = async (req, res) => {
   try {
     const subSectionId = req.body.subSectionId || req.params.subSectionId;
     const sectionId = req.body.sectionId || req.params.sectionId;
+    console.log("=== DELETE SUBSECTION ===");
+    console.log("Received subSectionId:", subSectionId, "sectionId:", sectionId);
 
     // remove subsection reference from section
-    await Section.findByIdAndUpdate(sectionId, {
+    const sectionUpdate = await Section.findByIdAndUpdate(sectionId, {
       $pull: { subSection: subSectionId },
-    });
+    }, { new: true });
+    console.log("Section pull result:", sectionUpdate);
 
     // delete subsection
-    await SubSection.findByIdAndDelete(subSectionId);
+    const subSecDelete = await SubSection.findByIdAndDelete(subSectionId);
+    console.log("Deleted subSection:", subSecDelete);
 
     return res.status(200).json({
       success: true,
       message: "Sub section deleted successfully",
     });
   } catch (error) {
+    console.error("Delete subsection error:", error);
     return res.status(500).json({
       success: false,
       message: "Unable to delete sub section",

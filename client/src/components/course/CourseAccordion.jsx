@@ -12,14 +12,15 @@ const CourseAccordion = ({
   onDeleteSubSection = () => {}
 }) => {
   const [openSection, setOpenSection] = useState(null);
-  const totalLectures = sections.reduce((acc, s) => acc + (s.subSection?.length || 0), 0);
+  const validSections = (sections || []).filter(s => s !== null && typeof s === 'object' && s._id);
+  const totalLectures = validSections.reduce((acc, s) => acc + ((s.subSection || []).filter(sub => sub !== null).length), 0);
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-md)', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
-        <span>{sections.length} section{sections.length !== 1 ? 's' : ''} • {totalLectures} lecture{totalLectures !== 1 ? 's' : ''}</span>
+        <span>{validSections.length} section{validSections.length !== 1 ? 's' : ''} • {totalLectures} lecture{totalLectures !== 1 ? 's' : ''}</span>
       </div>
-      {sections.map((section, i) => (
+      {validSections.map((section, i) => (
         <div key={section._id || i} className="glass-card" style={{ marginBottom: 'var(--space-sm)', overflow: 'hidden' }}>
           
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', borderBottom: openSection === i ? '1px solid var(--color-border)' : 'none' }}>
@@ -28,7 +29,7 @@ const CourseAccordion = ({
               style={{ flex: 1, padding: 'var(--space-md) var(--space-lg)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'none', border: 'none', color: 'var(--color-text-primary)', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '0.938rem', fontWeight: 600, textAlign: 'left' }}
             >
               <span>{section.sectionName}</span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginLeft: 'var(--space-sm)' }}>{section.subSection?.length || 0} lectures</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginLeft: 'var(--space-sm)' }}>{(section.subSection || []).filter(sub => sub !== null).length} lectures</span>
             </button>
             
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', paddingRight: 'var(--space-lg)' }}>
@@ -62,7 +63,7 @@ const CourseAccordion = ({
           <AnimatePresence>
             {openSection === i && (
               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}>
-                {(section.subSection || []).map((sub) => {
+                {((section.subSection || []).filter(sub => sub !== null)).map((sub) => {
                   const isDoc = sub.timeDuration === 'Doc';
                   return (
                     <div

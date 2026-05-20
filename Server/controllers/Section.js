@@ -91,11 +91,30 @@ exports.deleteSection = async (req, res) => {
   try {
     // get id
     const sectionId = req.body.sectionId || req.params.sectionId || req.query.sectionId;
+    console.log("=== DELETE SECTION ===");
+    console.log("Received sectionId:", sectionId);
 
-    // delete section
-    await Section.findByIdAndDelete(sectionId);
+    // Remove section reference from any courses
+    const courseUpdate = await Course.updateMany(
+      { courseContent: sectionId },
+      { $pull: { courseContent: sectionId } }
+    );
+    console.log("Course pull result:", courseUpdate);
 
-    // TODO: do we need to delete the entry from the course schema?
+    // Find section to delete its subsections
+    const section = await Section.findById(sectionId);
+    if (section) {
+      if (section.subSection && section.subSection.length > 0) {
+        const SubSection = require("../models/SubSection");
+        const subSecDelete = await SubSection.deleteMany({ _id: { $in: section.subSection } });
+        console.log("Deleted subsections:", subSecDelete);
+      }
+      // delete section
+      const secDelete = await Section.findByIdAndDelete(sectionId);
+      console.log("Deleted section:", secDelete);
+    } else {
+      console.log("Section not found in db");
+    }
 
     // return response
     return res.status(200).json({
@@ -103,6 +122,7 @@ exports.deleteSection = async (req, res) => {
       message: "Section deleted successfully",
     });
   } catch (error) {
+    console.error("Delete section error:", error);
     return res.status(500).json({
       success: false,
       message: "Unable to delete section",
