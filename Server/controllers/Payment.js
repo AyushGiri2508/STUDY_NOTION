@@ -4,6 +4,7 @@ const User = require("../models/User");
 const mailSender = require("../utils/mailSender");
 const mongoose = require("mongoose");
 const crypto = require("crypto");
+const { courseEnrollmentEmail } = require("../mail/templates/courseEnrollmentEmail");
 
 // Capture the payment and initiate the Razorpay order
 exports.capturePayment = async (req, res) => {
@@ -114,8 +115,8 @@ exports.capturePayment = async (req, res) => {
         try {
           await mailSender(
             enrolledStudent.email,
-            "Congratulations - Course Enrolled",
-            `Congratulations, you have successfully enrolled in ${course.courseName}`
+            `Course Registration Confirmation: ${course.courseName}`,
+            courseEnrollmentEmail(course.courseName, `${enrolledStudent.firstName} ${enrolledStudent.lastName}`)
           );
         } catch (mailError) {
           console.log("Mail sender failed in mock payment:", mailError.message);
@@ -182,8 +183,8 @@ exports.verifySignature = async (req, res) => {
       // send confirmation email
       const emailResponse = await mailSender(
         enrolledStudent.email,
-        "Congratulations",
-        "Congratulations, you have purchased a new course"
+        `Course Registration Confirmation: ${enrolledCourse.courseName}`,
+        courseEnrollmentEmail(enrolledCourse.courseName, `${enrolledStudent.firstName} ${enrolledStudent.lastName}`)
       );
       console.log(emailResponse);
 
