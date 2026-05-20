@@ -32,6 +32,7 @@ import MyCourses from './pages/dashboard/MyCourses';
 import AddCourse from './pages/dashboard/AddCourse';
 import ManageCourse from './pages/dashboard/ManageCourse';
 import DashboardHome from './pages/dashboard/DashboardHome';
+import ViewCourse from './pages/dashboard/ViewCourse';
 
 function App() {
   return (
@@ -66,6 +67,7 @@ function App() {
               {/* Student */}
               <Route path="enrolled-courses" element={<ProtectedRoute roles={['Student']}><EnrolledCourses /></ProtectedRoute>} />
               <Route path="cart" element={<ProtectedRoute roles={['Student']}><Cart /></ProtectedRoute>} />
+              <Route path="view-course/:courseId" element={<ProtectedRoute roles={['Student']}><ViewCourse /></ProtectedRoute>} />
 
               {/* Instructor */}
               <Route path="my-courses" element={<ProtectedRoute roles={['Instructor']}><MyCourses /></ProtectedRoute>} />
