@@ -21,14 +21,14 @@ const mailSender = async (email, title, body) => {
     const data = await response.json();
 
     if (!response.ok) {
-      console.log("❌ Brevo API error:", data);
+      console.log(" Brevo API error:", data);
       throw new Error(data.message || "Brevo email failed");
     }
 
-    console.log("✅ Email sent via Brevo:", data.messageId);
+    console.log("Email sent via Brevo:", data.messageId);
     return data;
   } catch (error) {
-    console.log("❌ Mail error:", error.message);
+    console.log("Mail error:", error.message);
     throw error;
   }
 };

@@ -36,7 +36,7 @@ function App() {
           <Navbar />
           <Routes>
             {/* Public */}
-            <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
+            <Route path="/" element={<Home />} />
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
             <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
             <Route path="/verify-otp" element={<PublicRoute><VerifyOTP /></PublicRoute>} />

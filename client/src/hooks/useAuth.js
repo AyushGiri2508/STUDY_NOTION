@@ -36,8 +36,8 @@ export const useAuth = () => {
       
       toast.success('Account created successfully!');
 
-      // Redirect to dashboard home
-      navigate('/dashboard');
+      // Redirect to home page
+      navigate('/');
       
       return res.data;
     } catch (err) {
@@ -56,8 +56,8 @@ export const useAuth = () => {
       setToken(res.data.token);
       toast.success('Welcome back!');
 
-      // Redirect to dashboard home
-      navigate('/dashboard');
+      // Redirect to home page
+      navigate('/');
 
       return res.data;
     } catch (err) {

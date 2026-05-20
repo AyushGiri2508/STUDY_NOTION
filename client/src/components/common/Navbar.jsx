@@ -63,6 +63,9 @@ const Navbar = () => {
 
           <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}>About</Link>
           <Link to="/contact" className={`nav-link ${location.pathname === '/contact' ? 'active' : ''}`}>Contact</Link>
+          {isAuthenticated && (
+            <Link to="/dashboard/my-profile" className={`nav-link ${location.pathname.startsWith('/dashboard') ? 'active' : ''}`}>Dashboard</Link>
+          )}
         </div>
 
         <div className="navbar-actions">
