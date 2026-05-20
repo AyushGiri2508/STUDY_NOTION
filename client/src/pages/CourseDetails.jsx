@@ -26,6 +26,14 @@ const CourseDetails = () => {
   const avgRating = course.ratingAndReviews?.length > 0
     ? (course.ratingAndReviews.reduce((a, r) => a + (r.rating || 0), 0) / course.ratingAndReviews.length).toFixed(1) : 0;
 
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Recently';
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) 
+      ? 'Recently' 
+      : date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
   const handleAddToCart = () => {
     if (!isAuthenticated) { toast.error('Please login first'); return; }
     addToCart(course);
@@ -40,7 +48,7 @@ const CourseDetails = () => {
     <div className="page-wrapper">
       {/* Hero Banner */}
       <div className="course-hero">
-        <div className="container">
+        <div className="container course-hero-grid">
           <div className="course-hero-content">
             <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2xs)', color: 'var(--color-text-secondary)', textDecoration: 'none', fontSize: '0.875rem', marginBottom: 'var(--space-md)' }}>
               <HiArrowLeft /> Back
@@ -66,18 +74,18 @@ const CourseDetails = () => {
             </p>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-lg)', flexWrap: 'wrap', marginTop: 'var(--space-md)', fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-3xs)' }}><HiOutlineClock /> Last updated {new Date(course.updatedAt || course.createdAt).toLocaleDateString()}</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-3xs)' }}><HiOutlineClock /> Last updated {formatDate(course.updatedAt || course.createdAt)}</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-3xs)' }}><HiOutlineGlobeAlt /> English</span>
             </div>
           </div>
 
           {/* Sidebar Purchase Card */}
-          <div className="course-hero-sidebar">
-            <motion.div className="glass-card" style={{ padding: 'var(--space-xl)', position: 'sticky', top: 'calc(var(--nav-height) + var(--space-lg))' }} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-              <div style={{ height: 180, borderRadius: 'var(--radius-md)', overflow: 'hidden', marginBottom: 'var(--space-lg)', background: 'var(--color-bg-secondary)' }}>
-                <img src={course.thumbnail || ''} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div className="course-price-card">
+            <motion.div className="glass-card" style={{ padding: 'var(--space-xl)' }} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+              <div className="course-price-thumb">
+                <img src={course.thumbnail || ''} alt="" />
               </div>
-              <p style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', fontWeight: 800, color: 'var(--color-yellow)', marginBottom: 'var(--space-lg)' }}>₹{course.price}</p>
+              <p className="course-price">₹{course.price}</p>
               {isInstructorOfCourse ? (
                 <Link
                   to={`/dashboard/manage-course/${course._id}`}
@@ -89,7 +97,7 @@ const CourseDetails = () => {
               ) : isEnrolled ? (
                 <Link to={`/dashboard/view-course/${course._id}`} className="btn btn-yellow btn-lg" style={{ width: '100%' }}>Go to Course</Link>
               ) : isStudent ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                <div className="course-price-actions">
                   <button className="btn btn-yellow btn-lg" onClick={handleBuyNow} style={{ width: '100%' }}>Buy Now</button>
                   <button className="btn btn-outline" onClick={handleAddToCart} disabled={isInCart(course._id)} style={{ width: '100%' }}>
                     {isInCart(course._id) ? 'Already in Cart' : 'Add to Cart'}
