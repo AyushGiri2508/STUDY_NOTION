@@ -182,7 +182,7 @@ exports.login = async (req, res) => {
     }
 
     // check if user exists
-    const user = await User.findOne({ email }).populate("additionalDetails");
+    const user = await User.findOne({ email }).populate("additionalDetails").populate("courses");
     if (!user) {
       return res.status(401).json({
         success: false,

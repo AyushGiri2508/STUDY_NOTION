@@ -87,7 +87,8 @@ exports.updateDisplayPicture = async (req, res) => {
       { _id: userId },
       { image: image.secure_url },
       { new: true }
-    ).populate("additionalDetails");
+    ).populate("additionalDetails")
+     .populate("courses");
 
     return res.status(200).json({
       success: true,
@@ -148,6 +149,7 @@ exports.getAllUserDetails = async (req, res) => {
     // get user details
     const userDetails = await User.findById(id)
       .populate("additionalDetails")
+      .populate("courses")
       .exec();
 
     // return response

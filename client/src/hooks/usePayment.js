@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import * as paymentApi from '../api/paymentApi';
+import * as profileApi from '../api/profileApi';
 import { useAuthStore } from '../store/AuthContext';
 import { useCartStore } from '../store/CartContext';
 import toast from 'react-hot-toast';
@@ -24,8 +25,11 @@ export const usePayment = () => {
       if (res.data.mock) {
         toast.success('Demo Mode: Enrolled successfully!');
         clearCart();
-        if (user) {
-          setUser({ ...user, courses: [...(user.courses || []), courseId] });
+        try {
+          const profileRes = await profileApi.getUserDetails();
+          setUser(profileRes.data.data);
+        } catch (fetchErr) {
+          console.error("Failed to sync user details:", fetchErr);
         }
         return;
       }
@@ -46,8 +50,11 @@ export const usePayment = () => {
             toast.success('Course purchased successfully!');
             clearCart();
             // Update user's enrolled courses
-            if (user) {
-              setUser({ ...user, courses: [...(user.courses || []), courseId] });
+            try {
+              const profileRes = await profileApi.getUserDetails();
+              setUser(profileRes.data.data);
+            } catch (fetchErr) {
+              console.error("Failed to sync user details:", fetchErr);
             }
           } catch {
             toast.error('Payment verification failed');

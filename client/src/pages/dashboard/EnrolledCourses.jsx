@@ -14,18 +14,32 @@ const EnrolledCourses = () => {
 
       {courses.length > 0 ? (
         <div style={{ display: 'grid', gap: 'var(--space-md)' }}>
-          {courses.map((courseId, i) => (
-            <div key={courseId?._id || courseId || i} className="glass-card dash-course-card">
-              <div className="dash-course-thumb" style={{ background: 'var(--color-bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <HiOutlinePlay style={{ fontSize: '2rem', color: 'var(--color-yellow)' }} />
+          {courses.map((course, i) => {
+            const isObject = typeof course === 'object' && course !== null;
+            const courseName = isObject ? (course.courseName || 'Untitled Course') : 'Course';
+            const courseDesc = isObject ? (course.courseDescription || 'Click to continue learning') : 'Click to continue learning';
+            const courseThumb = isObject ? course.thumbnail : null;
+            const targetId = isObject ? course._id : course;
+
+            return (
+              <div key={targetId || i} className="glass-card dash-course-card">
+                <div className="dash-course-thumb" style={{ background: 'var(--color-bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  {courseThumb ? (
+                    <img src={courseThumb} alt={courseName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <HiOutlinePlay style={{ fontSize: '2rem', color: 'var(--color-yellow)' }} />
+                  )}
+                </div>
+                <div className="dash-course-info">
+                  <h4>{courseName}</h4>
+                  <p style={{ color: 'var(--color-text-secondary)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    {courseDesc}
+                  </p>
+                </div>
+                <Link to={`/course/${targetId}`} className="btn btn-yellow btn-sm">Continue</Link>
               </div>
-              <div className="dash-course-info">
-                <h4>Course</h4>
-                <p style={{ color: 'var(--color-text-secondary)' }}>Click to continue learning</p>
-              </div>
-              <Link to={`/course/${typeof courseId === 'string' ? courseId : courseId?._id}`} className="btn btn-yellow btn-sm">Continue</Link>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="empty-state glass-card">
