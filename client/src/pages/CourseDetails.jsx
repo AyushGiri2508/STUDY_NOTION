@@ -82,7 +82,7 @@ const CourseDetails = () => {
     const totalLectures = allLectures.length;
 
     return (
-      <div className="page-wrapper" style={{ minHeight: '100vh', background: 'var(--color-bg-primary)', paddingTop: 'var(--space-xl)' }}>
+      <div className="page-wrapper" style={{ minHeight: '100vh', background: 'var(--color-bg-primary)', paddingTop: 'calc(var(--nav-height) + var(--space-xl))' }}>
         <div className="container">
           {/* Player Header */}
           <div className="glass-card" style={{ padding: '1rem var(--space-xl)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: 12, marginBottom: 'var(--space-lg)' }}>
