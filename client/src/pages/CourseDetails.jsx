@@ -4,7 +4,6 @@ import { useCourseDetails } from '../hooks/useCourseDetails';
 import { useCart } from '../hooks/useCart';
 import { usePayment } from '../hooks/usePayment';
 import { useAuthStore } from '../store/AuthContext';
-import CourseAccordion from '../components/course/CourseAccordion';
 import RatingStars from '../components/common/RatingStars';
 import Loader from '../components/common/Loader';
 import { motion } from 'framer-motion';
@@ -17,9 +16,8 @@ import {
   HiOutlineDocumentText,
   HiOutlineArrowLeft,
   HiOutlineArrowRight,
-  HiOutlineBookOpen,
-  HiOutlineLockClosed
-} from 'react-icons/hi';
+  HiOutlineBookOpen
+} from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 import './CourseDetails.css';
 
