@@ -31,8 +31,9 @@ exports.resetPasswordToken = async (req, res) => {
       { new: true }
     );
 
-    // create url
-    const url = `http://localhost:3000/update-password/${token}`; // matches frontend route
+    // create url based on dynamic origin or env fallback
+    const clientUrl = req.headers.origin || process.env.CLIENT_URL || "http://localhost:3000";
+    const url = `${clientUrl}/update-password/${token}`;
 
     // send email to user
     await mailSender(
@@ -65,7 +66,7 @@ exports.resetPassword = async (req, res) => {
 
     // validate passwords match
     if (password !== confirmPassword) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "Passwords do not match",
       });
@@ -76,7 +77,7 @@ exports.resetPassword = async (req, res) => {
 
     // if no entry - invalid token
     if (!userDetails) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "Token is invalid",
       });
@@ -84,7 +85,7 @@ exports.resetPassword = async (req, res) => {
 
     // check token expiration
     if (userDetails.resetPasswordExpires < Date.now()) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "Token has expired, please regenerate your token",
       });
