@@ -33,6 +33,7 @@ const CourseDetails = () => {
   const [showPlayer, setShowPlayer] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [openSection, setOpenSection] = useState(null);
+  const [previewSection, setPreviewSection] = useState(null);
   const [reviewRating, setReviewRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
@@ -412,17 +413,65 @@ const CourseDetails = () => {
             <section style={{ marginBottom: 'var(--space-2xl)' }}>
               <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-lg)' }}>Course Content</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
-                {(course.courseContent || []).filter(s => s && s._id).map((section) => {
+                {(course.courseContent || []).filter(s => s && s._id).map((section, si) => {
                   const subs = (section.subSection || []).filter(sub => sub && sub._id);
+                  const isOpen = previewSection === si;
                   return (
-                    <div key={section._id} className="glass-card" style={{ padding: 'var(--space-md) var(--space-lg)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', fontWeight: 600, fontSize: '0.938rem', color: 'var(--color-text-primary)' }}>
-                        <HiOutlineChevronDown style={{ color: 'var(--color-yellow)', flexShrink: 0 }} />
-                        {section.sectionName}
-                      </span>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 400 }}>
-                        {subs.length} lecture{subs.length !== 1 ? 's' : ''}
-                      </span>
+                    <div key={section._id} className="glass-card" style={{ overflow: 'hidden' }}>
+                      <button
+                        onClick={() => setPreviewSection(isOpen ? null : si)}
+                        style={{
+                          width: '100%',
+                          padding: 'var(--space-md) var(--space-lg)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: 'var(--color-text-primary)',
+                          fontWeight: 600,
+                          fontSize: '0.938rem',
+                          textAlign: 'left',
+                          fontFamily: 'var(--font-body)',
+                        }}
+                      >
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+                          <HiOutlineChevronDown style={{ transition: 'transform 0.2s', transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', color: 'var(--color-yellow)', flexShrink: 0 }} />
+                          {section.sectionName}
+                        </span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 400 }}>
+                          {subs.length} lecture{subs.length !== 1 ? 's' : ''}
+                        </span>
+                      </button>
+                      {isOpen && (
+                        <div style={{ borderTop: '1px solid var(--color-border)', background: 'rgba(0,0,0,0.08)' }}>
+                          {subs.length === 0 ? (
+                            <p style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: '0.813rem', color: 'var(--color-text-muted)', margin: 0 }}>No lectures in this section.</p>
+                          ) : (
+                            subs.map((sub) => (
+                              <div
+                                key={sub._id}
+                                style={{
+                                  padding: '10px var(--space-lg)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 'var(--space-sm)',
+                                  borderBottom: '1px solid rgba(255,255,255,0.03)',
+                                }}
+                              >
+                                <HiOutlinePlayCircle style={{ fontSize: '1rem', color: 'var(--color-text-muted)', flexShrink: 0 }} />
+                                <span style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', flex: 1 }}>
+                                  {sub.title}
+                                </span>
+                                {!isEnrolled && !isInstructorOfCourse && (
+                                  <span style={{ fontSize: '0.688rem', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>🔒</span>
+                                )}
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
