@@ -38,7 +38,7 @@ const Home = () => {
               Unlock your potential with world-class courses, interactive learning experiences, and a vibrant community of learners and instructors.
             </motion.p>
             <motion.div className="hero-buttons" variants={fadeUp}>
-              <Link to="/signup" className="btn btn-yellow btn-lg">Get Started Free <HiArrowRight /></Link>
+              <Link to="/catalog" className="btn btn-yellow btn-lg">Get Started Free <HiArrowRight /></Link>
               <Link to="/about" className="btn btn-outline btn-lg"><HiOutlinePlay /> Learn More</Link>
             </motion.div>
           </motion.div>
