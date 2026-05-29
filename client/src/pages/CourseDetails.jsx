@@ -428,22 +428,26 @@ const CourseDetails = () => {
                 })}
               </div>
               {!isEnrolled && !isInstructorOfCourse && (
-                <div style={{ marginTop: 'var(--space-lg)', textAlign: 'center', padding: 'var(--space-lg)', background: 'rgba(255,214,10,0.04)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,214,10,0.1)' }}>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-sm)' }}>
+                <div style={{ marginTop: 'var(--space-lg)', textAlign: 'center', padding: 'var(--space-xl) var(--space-lg)', background: 'linear-gradient(135deg, rgba(255,214,10,0.06) 0%, rgba(255,214,10,0.02) 100%)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,214,10,0.15)' }}>
+                  <span style={{ fontSize: '2rem', display: 'block', marginBottom: 'var(--space-sm)' }}>🔒</span>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 'var(--space-xs)' }}>
+                    Purchase the course to get full access
+                  </h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: 'var(--space-md)', maxWidth: 380, marginLeft: 'auto', marginRight: 'auto' }}>
                     {isAuthenticated
-                      ? 'Enroll in this course to access all lectures and content.'
-                      : 'Login and enroll to access all lectures and content.'}
+                      ? 'Enroll now to unlock all lectures, resources, and course content.'
+                      : 'Login and enroll to unlock all lectures, resources, and course content.'}
                   </p>
                   <Link
                     to={isAuthenticated ? '#' : '/login'}
-                    className="btn btn-yellow btn-sm"
+                    className="btn btn-yellow"
                     onClick={(e) => {
                       if (isAuthenticated) {
                         e.preventDefault();
                         handleBuyNow();
                       }
                     }}
-                    style={{ fontSize: '0.813rem', textDecoration: 'none' }}
+                    style={{ fontSize: '0.875rem', textDecoration: 'none', paddingLeft: 'var(--space-xl)', paddingRight: 'var(--space-xl)' }}
                   >
                     {isAuthenticated ? 'Enroll Now' : 'Login to Enroll'}
                   </Link>
