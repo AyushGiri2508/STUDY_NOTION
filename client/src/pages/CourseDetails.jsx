@@ -69,7 +69,7 @@ const CourseDetails = () => {
   const isDoc = currentLecture?.timeDuration === 'Doc' || !currentLecture?.videoUrl?.match(/\.(mp4|webm|ogg|mov)/i);
 
   const isInstructorOfCourse = isAuthenticated && user?.accountType === 'Instructor' && (course.instructor?._id === user?._id || course.instructor === user?._id);
-  const isEnrolled = course.studentEnrolled?.some((s) => s === user?._id || s?._id === user?._id);
+  const isEnrolled = isAuthenticated && user?._id && course.studentEnrolled?.some((s) => s?.toString() === user._id.toString());
   const avgRating = course.ratingAndReviews?.length > 0
     ? (course.ratingAndReviews.reduce((a, r) => a + (r.rating || 0), 0) / course.ratingAndReviews.length).toFixed(1) : 0;
 
