@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiOutlineAcademicCap, HiOutlineLightBulb, HiOutlineGlobe, HiOutlineChartBar, HiArrowRight, HiOutlinePlay } from 'react-icons/hi';
 import { useRatings } from '../hooks/useRatings';
+import { useAuth } from '../hooks/useAuth';
 import RatingStars from '../components/common/RatingStars';
 import './Home.css';
 
@@ -9,6 +10,7 @@ const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } };
 
 const Home = () => {
   const { reviews } = useRatings();
+  const { isAuthenticated } = useAuth();
 
   const features = [
     { icon: <HiOutlineAcademicCap />, title: 'Learn from Experts', desc: 'Access courses from industry-leading instructors who bring real-world experience.' },
@@ -85,21 +87,23 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Become Instructor CTA */}
-      <section className="cta-section">
-        <div className="container">
-          <motion.div className="cta-card glass-card" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <div className="cta-content">
-              <h2>Become an <span className="yellow-text">Instructor</span></h2>
-              <p>Share your knowledge with thousands of learners. Create courses, earn revenue, and make an impact on education worldwide.</p>
-              <Link to="/signup" className="btn btn-yellow btn-lg">Start Teaching Today <HiArrowRight /></Link>
-            </div>
-            <div className="cta-visual">
-              <div className="cta-circle"><HiOutlineAcademicCap /></div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      {/* Become Instructor CTA — only for non-logged-in users */}
+      {!isAuthenticated && (
+        <section className="cta-section">
+          <div className="container">
+            <motion.div className="cta-card glass-card" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <div className="cta-content">
+                <h2>Become an <span className="yellow-text">Instructor</span></h2>
+                <p>Share your knowledge with thousands of learners. Create courses, earn revenue, and make an impact on education worldwide.</p>
+                <Link to="/signup" className="btn btn-yellow btn-lg">Start Teaching Today <HiArrowRight /></Link>
+              </div>
+              <div className="cta-visual">
+                <div className="cta-circle"><HiOutlineAcademicCap /></div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Reviews */}
       {reviews.length > 0 && (
