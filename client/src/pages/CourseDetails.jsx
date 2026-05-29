@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useCourseDetails } from '../hooks/useCourseDetails';
 import { useCart } from '../hooks/useCart';
 import { usePayment } from '../hooks/usePayment';
 import { useAuthStore } from '../store/AuthContext';
+import { useRatings } from '../hooks/useRatings';
 import RatingStars from '../components/common/RatingStars';
 import Loader from '../components/common/Loader';
 import { motion } from 'framer-motion';
-import { HiOutlineGlobeAlt } from 'react-icons/hi';
+import { HiOutlineGlobeAlt, HiOutlineStar } from 'react-icons/hi';
 import { 
   HiOutlineClock, 
   HiOutlineChevronDown,
@@ -15,21 +16,27 @@ import {
   HiOutlineDocumentText,
   HiOutlineArrowLeft,
   HiOutlineArrowRight,
-  HiOutlineBookOpen
+  HiOutlineBookOpen,
+  HiStar
 } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 import './CourseDetails.css';
 
 const CourseDetails = () => {
   const { courseId } = useParams();
-  const { course, loading } = useCourseDetails(courseId);
+  const { course, loading, refetch } = useCourseDetails(courseId);
   const { addToCart, isInCart } = useCart();
   const { buyCourse } = usePayment();
   const { user, isAuthenticated, isStudent } = useAuthStore();
+  const { createRating } = useRatings();
 
   const [showPlayer, setShowPlayer] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [openSection, setOpenSection] = useState(null);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [reviewText, setReviewText] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   if (loading) return <div className="page-wrapper"><Loader text="Loading course..." /></div>;
   if (!course) return <div className="page-wrapper"><div className="container empty-state"><h3>Course not found</h3></div></div>;
@@ -58,6 +65,30 @@ const CourseDetails = () => {
   const isEnrolled = course.studentEnrolled?.some((s) => s === user?._id || s?._id === user?._id);
   const avgRating = course.ratingAndReviews?.length > 0
     ? (course.ratingAndReviews.reduce((a, r) => a + (r.rating || 0), 0) / course.ratingAndReviews.length).toFixed(1) : 0;
+
+  const hasAlreadyReviewed = useMemo(() => {
+    if (!user?._id || !course?.ratingAndReviews) return false;
+    return course.ratingAndReviews.some(
+      (r) => r.user?._id === user._id || r.user === user._id
+    );
+  }, [course?.ratingAndReviews, user?._id]);
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (reviewRating === 0) { toast.error('Please select a star rating'); return; }
+    if (!reviewText.trim()) { toast.error('Please write a review'); return; }
+    setSubmitting(true);
+    try {
+      await createRating({ rating: reviewRating, review: reviewText.trim(), courseId: course._id });
+      setReviewRating(0);
+      setReviewText('');
+      refetch();
+    } catch (err) {
+      // error already handled by useRatings hook
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const formatDate = (dateString) => {
     if (!dateString) return 'Recently';
@@ -391,6 +422,93 @@ const CourseDetails = () => {
                   </div>
                 ))}
               </div>
+            </section>
+          )}
+
+          {/* Review Submission Form — only for enrolled students */}
+          {isEnrolled && isStudent && (
+            <section style={{ marginTop: 'var(--space-2xl)' }}>
+              <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-lg)' }}>
+                {hasAlreadyReviewed ? "You've Already Reviewed" : 'Write a Review'}
+              </h2>
+              {hasAlreadyReviewed ? (
+                <div className="glass-card" style={{ padding: 'var(--space-xl)', textAlign: 'center' }}>
+                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.938rem' }}>
+                    Thank you! You have already submitted a review for this course.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmitReview} className="glass-card" style={{ padding: 'var(--space-xl)' }}>
+                  {/* Star Rating */}
+                  <div style={{ marginBottom: 'var(--space-lg)' }}>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: 'var(--space-sm)', color: 'var(--color-text-primary)' }}>
+                      Your Rating
+                    </label>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setReviewRating(star)}
+                          onMouseEnter={() => setHoverRating(star)}
+                          onMouseLeave={() => setHoverRating(0)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: '2px',
+                            fontSize: '1.75rem',
+                            color: star <= (hoverRating || reviewRating) ? 'var(--color-yellow)' : 'var(--color-text-muted)',
+                            transition: 'color 0.15s, transform 0.15s',
+                            transform: star <= (hoverRating || reviewRating) ? 'scale(1.15)' : 'scale(1)',
+                          }}
+                          aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
+                        >
+                          {star <= (hoverRating || reviewRating) ? <HiStar /> : <HiOutlineStar />}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Review Text */}
+                  <div style={{ marginBottom: 'var(--space-lg)' }}>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, marginBottom: 'var(--space-sm)', color: 'var(--color-text-primary)' }}>
+                      Your Review
+                    </label>
+                    <textarea
+                      value={reviewText}
+                      onChange={(e) => setReviewText(e.target.value)}
+                      placeholder="Share your experience with this course..."
+                      rows={4}
+                      style={{
+                        width: '100%',
+                        padding: 'var(--space-md)',
+                        background: 'var(--color-bg-secondary)',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: 'var(--radius-md)',
+                        color: 'var(--color-text-primary)',
+                        fontSize: '0.875rem',
+                        fontFamily: 'var(--font-body)',
+                        resize: 'vertical',
+                        outline: 'none',
+                        transition: 'border-color 0.2s',
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = 'var(--color-yellow)'}
+                      onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
+                    />
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    className="btn btn-yellow"
+                    disabled={submitting}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                  >
+                    {submitting ? 'Submitting...' : 'Submit Review'}
+                  </button>
+                </form>
+              )}
             </section>
           )}
         </div>
