@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useCourses } from '../../hooks/useCourses';
@@ -25,6 +26,11 @@ const DashboardHome = () => {
   const { user, isStudent, isInstructor, isAdmin } = useAuth();
   const { courses } = useCourses();
   const { categories } = useCategories();
+  const coursesSectionRef = useRef(null);
+
+  const scrollToCourses = () => {
+    coursesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const enrolledCount = user?.courses?.length || 0;
   const myCourses = isInstructor
@@ -82,6 +88,14 @@ const DashboardHome = () => {
             <span className={`badge badge-yellow`}>{user?.accountType}</span>
             <span className="welcome-email">{user?.email}</span>
           </div>
+          {isStudent && (
+            <button
+              className="btn btn-yellow btn-get-started"
+              onClick={scrollToCourses}
+            >
+              Get Started <HiArrowRight />
+            </button>
+          )}
         </div>
         <div className="welcome-visual">
           {user?.image ? (
@@ -167,7 +181,7 @@ const DashboardHome = () => {
 
       {/* Recent Courses (Students) / My Courses (Instructors) */}
       {isStudent && courses.length > 0 && (
-        <motion.div variants={fadeUp} style={{ marginTop: 'var(--space-2xl)' }}>
+        <motion.div ref={coursesSectionRef} id="explore-courses" variants={fadeUp} style={{ marginTop: 'var(--space-2xl)', scrollMarginTop: '100px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
             <h2 className="dash-section-title"><HiOutlineAcademicCap style={{ color: 'var(--color-yellow)' }} /> Explore Courses</h2>
             <Link to="/catalog" style={{ fontSize: '0.813rem', color: 'var(--color-yellow)', display: 'flex', alignItems: 'center', gap: 4 }}>View All <HiArrowRight /></Link>

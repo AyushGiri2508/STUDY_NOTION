@@ -73,6 +73,31 @@
   font-size: 0.75rem;
   color: var(--color-text-muted);
 }
+
+/* ===== GET STARTED BUTTON ===== */
+.btn-get-started {
+  margin-top: var(--space-lg);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.65rem 1.6rem;
+  font-size: 0.938rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+.btn-get-started:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(255, 214, 10, 0.25);
+}
+.btn-get-started svg {
+  transition: transform var(--transition-fast);
+}
+.btn-get-started:hover svg {
+  transform: translateX(4px);
+}
 .welcome-visual { position: relative; z-index: 1; }
 .welcome-avatar {
   width: 88px;
@@ -280,6 +305,7 @@
   .welcome-subtitle { margin: 0 auto var(--space-md); }
   .welcome-greeting { justify-content: center; }
   .welcome-badges { justify-content: center; }
+  .btn-get-started { width: 100%; justify-content: center; }
   .dash-stats-row { flex-direction: column; }
   .dash-cards-grid { grid-template-columns: 1fr; }
   .dash-courses-scroll { grid-template-columns: 1fr; }
