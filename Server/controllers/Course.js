@@ -1,6 +1,7 @@
 const Course = require("../models/Course");
 const Category = require("../models/Category");
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 const { uploadImageToCloudinary } = require("../utils/imageUploader");
 
 // Create Course handler function
@@ -176,7 +177,13 @@ exports.getCourseDetails = async (req, res) => {
         },
       })
       .populate("category")
-      .populate("ratingAndReviews")
+      .populate({
+        path: "ratingAndReviews",
+        populate: {
+          path: "user",
+          select: "firstName lastName",
+        },
+      })
       .populate({
         path: "courseContent",
         populate: {
@@ -186,10 +193,47 @@ exports.getCourseDetails = async (req, res) => {
       .exec();
 
     // validation
-    if (!courseDetails) {
+    if (!courseDetails || courseDetails.length === 0) {
       return res.status(400).json({
         success: false,
         message: `Could not find the course with ${courseId}`,
+      });
+    }
+
+    // Determine if requesting user is authorized to view video content
+    let isAuthorized = false;
+    try {
+      const token =
+        req.header("Authorization")?.replace("Bearer ", "") ||
+        req.cookies?.token;
+      if (token) {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+        const course = Array.isArray(courseDetails) ? courseDetails[0] : courseDetails;
+        if (course) {
+          const isEnrolled = (course.studentEnrolled || []).some(
+            (s) => s.toString() === userId.toString()
+          );
+          const isInstructor =
+            course.instructor?._id?.toString() === userId.toString();
+          isAuthorized = isEnrolled || isInstructor;
+        }
+      }
+    } catch (_) {
+      // Token invalid or missing — user is not authorized for content
+    }
+
+    // If not authorized, strip videoUrl from all subSections
+    let responseData = courseDetails;
+    if (!isAuthorized) {
+      responseData = JSON.parse(JSON.stringify(courseDetails));
+      const courses = Array.isArray(responseData) ? responseData : [responseData];
+      courses.forEach((c) => {
+        (c.courseContent || []).forEach((section) => {
+          (section.subSection || []).forEach((sub) => {
+            sub.videoUrl = undefined;
+          });
+        });
       });
     }
 
@@ -197,7 +241,7 @@ exports.getCourseDetails = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Course details fetched successfully",
-      data: courseDetails,
+      data: responseData,
     });
   } catch (error) {
     console.log(error);
