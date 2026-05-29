@@ -38,6 +38,13 @@ const CourseDetails = () => {
   const [reviewText, setReviewText] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  const hasAlreadyReviewed = useMemo(() => {
+    if (!user?._id || !course?.ratingAndReviews) return false;
+    return course.ratingAndReviews.some(
+      (r) => r.user?._id === user._id || r.user === user._id
+    );
+  }, [course?.ratingAndReviews, user?._id]);
+
   if (loading) return <div className="page-wrapper"><Loader text="Loading course..." /></div>;
   if (!course) return <div className="page-wrapper"><div className="container empty-state"><h3>Course not found</h3></div></div>;
 
@@ -66,12 +73,6 @@ const CourseDetails = () => {
   const avgRating = course.ratingAndReviews?.length > 0
     ? (course.ratingAndReviews.reduce((a, r) => a + (r.rating || 0), 0) / course.ratingAndReviews.length).toFixed(1) : 0;
 
-  const hasAlreadyReviewed = useMemo(() => {
-    if (!user?._id || !course?.ratingAndReviews) return false;
-    return course.ratingAndReviews.some(
-      (r) => r.user?._id === user._id || r.user === user._id
-    );
-  }, [course?.ratingAndReviews, user?._id]);
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
