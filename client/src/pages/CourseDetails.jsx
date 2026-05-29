@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useCourseDetails } from '../hooks/useCourseDetails';
 import { useCart } from '../hooks/useCart';
 import { usePayment } from '../hooks/usePayment';
@@ -17,6 +17,7 @@ import {
   HiOutlineArrowLeft,
   HiOutlineArrowRight,
   HiOutlineBookOpen,
+  HiOutlineLockClosed,
   HiStar
 } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
@@ -29,6 +30,7 @@ const CourseDetails = () => {
   const { buyCourse } = usePayment();
   const { user, isAuthenticated, isStudent } = useAuthStore();
   const { createRating } = useRatings();
+  const navigate = useNavigate();
 
   const [showPlayer, setShowPlayer] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -109,7 +111,7 @@ const CourseDetails = () => {
     buyCourse(course._id);
   };
 
-  if (showPlayer && course) {
+  if (showPlayer && course && (isEnrolled || isInstructorOfCourse)) {
     const sections = (course.courseContent || []).filter((s) => s && s._id);
     const totalLectures = allLectures.length;
 
@@ -407,6 +409,106 @@ const CourseDetails = () => {
           )}
 
 
+          {/* Course Content / Curriculum */}
+          {(course.courseContent || []).filter(s => s && s._id).length > 0 && (
+            <section style={{ marginBottom: 'var(--space-2xl)' }}>
+              <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-lg)' }}>Course Content</h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                {(course.courseContent || []).filter(s => s && s._id).map((section, si) => {
+                  const subs = (section.subSection || []).filter(sub => sub && sub._id);
+                  const isSectionOpen = openSection === si;
+                  const canAccess = isEnrolled || isInstructorOfCourse;
+                  return (
+                    <div key={section._id} className="glass-card" style={{ overflow: 'hidden' }}>
+                      <button
+                        onClick={() => setOpenSection(isSectionOpen ? null : si)}
+                        style={{
+                          width: '100%',
+                          padding: 'var(--space-md) var(--space-lg)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: 'var(--color-text-primary)',
+                          fontWeight: 600,
+                          fontSize: '0.938rem',
+                          textAlign: 'left',
+                          fontFamily: 'var(--font-body)',
+                        }}
+                      >
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+                          <HiOutlineChevronDown style={{ transition: 'transform 0.2s', transform: isSectionOpen ? 'rotate(180deg)' : 'rotate(0)', color: 'var(--color-yellow)', flexShrink: 0 }} />
+                          {section.sectionName}
+                        </span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 400 }}>
+                          {subs.length} lecture{subs.length !== 1 ? 's' : ''}
+                        </span>
+                      </button>
+
+                      {isSectionOpen && (
+                        <div style={{ borderTop: '1px solid var(--color-border)', background: 'rgba(0,0,0,0.08)' }}>
+                          {subs.length === 0 ? (
+                            <p style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: '0.813rem', color: 'var(--color-text-muted)', margin: 0 }}>No lectures in this section.</p>
+                          ) : (
+                            subs.map((sub) => {
+                              const isDocLecture = sub.timeDuration === 'Doc' || !sub.videoUrl?.match(/\.(mp4|webm|ogg|mov)/i);
+                              return (
+                                <div
+                                  key={sub._id}
+                                  style={{
+                                    padding: '10px var(--space-lg)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 'var(--space-sm)',
+                                    borderBottom: '1px solid rgba(255,255,255,0.03)',
+                                  }}
+                                >
+                                  {canAccess ? (
+                                    isDocLecture ? (
+                                      <HiOutlineDocumentText style={{ fontSize: '1rem', color: 'var(--color-text-muted)', flexShrink: 0 }} />
+                                    ) : (
+                                      <HiOutlinePlayCircle style={{ fontSize: '1rem', color: 'var(--color-text-muted)', flexShrink: 0 }} />
+                                    )
+                                  ) : (
+                                    <HiOutlineLockClosed style={{ fontSize: '1rem', color: 'var(--color-text-muted)', flexShrink: 0 }} />
+                                  )}
+                                  <span style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', flex: 1 }}>
+                                    {sub.title}
+                                  </span>
+                                  {!canAccess && (
+                                    <span style={{ fontSize: '0.688rem', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Enroll to access</span>
+                                  )}
+                                </div>
+                              );
+                            })
+                          )}
+                          {!canAccess && subs.length > 0 && (
+                            <div style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center', borderTop: '1px solid var(--color-border)' }}>
+                              <button
+                                className="btn btn-yellow btn-sm"
+                                onClick={() => {
+                                  if (!isAuthenticated) {
+                                    navigate('/login');
+                                  } else {
+                                    toast('Please enroll in this course to access the content.', { icon: '🔒' });
+                                  }
+                                }}
+                                style={{ fontSize: '0.813rem' }}
+                              >
+                                {isAuthenticated ? 'Enroll to Unlock' : 'Login to Access'}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
 
           {/* Reviews */}
           {course.ratingAndReviews?.length > 0 && (
