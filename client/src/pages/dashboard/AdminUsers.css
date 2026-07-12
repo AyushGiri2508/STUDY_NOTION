@@ -1,0 +1,186 @@
+/* ===== ADMIN PAGES — SHARED STYLES ===== */
+
+/* Page Header */
+.admin-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-xl);
+}
+.admin-page-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: 4px;
+}
+.admin-page-header p {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Filters Bar */
+.admin-filters {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
+  align-items: center;
+}
+.admin-search-box {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+}
+.admin-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+}
+.admin-search-input {
+  padding-left: 2.75rem !important;
+}
+
+.admin-role-filters {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.admin-filter-icon {
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  margin-right: 4px;
+}
+.admin-role-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.813rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.admin-role-btn:hover {
+  border-color: var(--color-border-hover);
+  color: var(--color-text-primary);
+}
+.admin-role-btn.active {
+  background: var(--color-yellow-light);
+  border-color: rgba(255, 214, 10, 0.3);
+  color: var(--color-yellow);
+}
+.admin-role-count {
+  font-size: 0.688rem;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+}
+.admin-role-btn.active .admin-role-count {
+  background: rgba(255, 214, 10, 0.15);
+}
+
+/* Table Container */
+.admin-table-container {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+
+/* Table */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.admin-table thead {
+  background: rgba(255, 255, 255, 0.03);
+}
+.admin-table th {
+  padding: 0.875rem var(--space-lg);
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-border);
+}
+.admin-table td {
+  padding: 0.875rem var(--space-lg);
+  font-size: 0.875rem;
+  border-bottom: 1px solid rgba(71, 165, 255, 0.06);
+  vertical-align: middle;
+}
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+.admin-table tr {
+  transition: background var(--transition-fast);
+}
+.admin-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* User Cell */
+.admin-user-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.admin-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-border);
+  flex-shrink: 0;
+}
+.admin-user-name {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+.admin-user-email {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-secondary);
+  font-size: 0.813rem;
+}
+.admin-course-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  padding: 2px 8px;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-full);
+  font-size: 0.813rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.admin-delete-btn {
+  padding: 0.4rem 0.6rem !important;
+}
+.admin-delete-btn:disabled {
+  opacity: 0.2;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .admin-filters { flex-direction: column; }
+  .admin-role-filters { flex-wrap: wrap; }
+  .admin-table-container { overflow-x: auto; }
+  .admin-table { min-width: 600px; }
+}

@@ -90,3 +90,21 @@ exports.isInstructor = async (req, res, next) => {
     });
   }
 };
+
+// isAdminOrInstructor — allows Admin to access Instructor routes too
+exports.isAdminOrInstructor = async (req, res, next) => {
+  try {
+    if (req.user.accountType !== "Admin" && req.user.accountType !== "Instructor") {
+      return res.status(401).json({
+        success: false,
+        message: "This is a protected route for Instructors and Admins only",
+      });
+    }
+    next();
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "User role cannot be verified",
+    });
+  }
+};

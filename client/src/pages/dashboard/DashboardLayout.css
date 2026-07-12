@@ -52,6 +52,21 @@
   margin: var(--space-md) var(--space-xl);
 }
 
+/* Admin sidebar links with blue accent */
+.sidebar-link-admin {
+  color: var(--color-text-muted) !important;
+  font-size: 0.813rem !important;
+}
+.sidebar-link-admin:hover {
+  color: var(--color-blue) !important;
+  background: rgba(71, 165, 255, 0.04) !important;
+}
+.sidebar-link-admin.active {
+  color: var(--color-blue) !important;
+  background: rgba(71, 165, 255, 0.06) !important;
+  border-left-color: var(--color-blue) !important;
+}
+
 .sidebar-logout {
   display: flex;
   align-items: center;

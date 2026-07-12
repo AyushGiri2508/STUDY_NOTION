@@ -55,10 +55,12 @@ const DashboardHome = () => {
   ];
 
   const adminCards = [
-    { icon: <HiOutlineClipboardList />, title: 'Categories', desc: `${categories.length} categories`, link: '/catalog', color: 'yellow' },
-    { icon: <HiOutlineCollection />, title: 'All Courses', desc: `${courses.length} courses on platform`, link: '/catalog', color: 'blue' },
-    { icon: <HiOutlineUser />, title: 'My Profile', desc: 'View & edit your profile', link: '/dashboard/my-profile', color: 'purple' },
-    { icon: <HiOutlineCog />, title: 'Settings', desc: 'Account preferences', link: '/dashboard/settings', color: 'green' },
+    { icon: <HiOutlineChartBar />, title: 'Admin Panel', desc: 'Platform analytics & overview', link: '/dashboard/admin', color: 'blue' },
+    { icon: <HiOutlineUser />, title: 'Manage Users', desc: `${courses.length ? 'View all users' : 'View all users'}`, link: '/dashboard/admin/users', color: 'purple' },
+    { icon: <HiOutlineCollection />, title: 'Manage Courses', desc: `${courses.length} courses on platform`, link: '/dashboard/admin/courses', color: 'yellow' },
+    { icon: <HiOutlineClipboardList />, title: 'Manage Categories', desc: `${categories.length} categories`, link: '/dashboard/admin/categories', color: 'green' },
+    { icon: <HiOutlineGlobeAlt />, title: 'Browse Catalog', desc: 'See the public catalog', link: '/catalog', color: 'blue' },
+    { icon: <HiOutlineCog />, title: 'Settings', desc: 'Account preferences', link: '/dashboard/settings', color: 'yellow' },
   ];
 
   const cards = isInstructor ? instructorCards : isAdmin ? adminCards : studentCards;

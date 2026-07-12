@@ -1,10 +1,10 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { HiOutlineUser, HiOutlineCog, HiOutlineCollection, HiOutlinePlusCircle, HiOutlineShoppingCart, HiOutlineLogout, HiOutlineHome } from 'react-icons/hi';
+import { HiOutlineUser, HiOutlineCog, HiOutlineCollection, HiOutlinePlusCircle, HiOutlineShoppingCart, HiOutlineLogout, HiOutlineHome, HiOutlineShieldCheck, HiOutlineUsers, HiOutlineClipboardList } from 'react-icons/hi';
 import './DashboardLayout.css';
 
 const DashboardLayout = () => {
-  const { isStudent, isInstructor, logout } = useAuth();
+  const { isStudent, isInstructor, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => { logout(); navigate('/'); };
@@ -27,6 +27,16 @@ const DashboardLayout = () => {
             <>
               <NavLink to="/dashboard/my-courses" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}><HiOutlineCollection /> My Courses</NavLink>
               <NavLink to="/dashboard/add-course" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}><HiOutlinePlusCircle /> Add Course</NavLink>
+            </>
+          )}
+
+          {isAdmin && (
+            <>
+              <div className="sidebar-divider" />
+              <NavLink to="/dashboard/admin" end className={({ isActive }) => `sidebar-link sidebar-link-admin ${isActive ? 'active' : ''}`}><HiOutlineShieldCheck /> Admin Panel</NavLink>
+              <NavLink to="/dashboard/admin/users" className={({ isActive }) => `sidebar-link sidebar-link-admin ${isActive ? 'active' : ''}`}><HiOutlineUsers /> Manage Users</NavLink>
+              <NavLink to="/dashboard/admin/courses" className={({ isActive }) => `sidebar-link sidebar-link-admin ${isActive ? 'active' : ''}`}><HiOutlineCollection /> Manage Courses</NavLink>
+              <NavLink to="/dashboard/admin/categories" className={({ isActive }) => `sidebar-link sidebar-link-admin ${isActive ? 'active' : ''}`}><HiOutlineClipboardList /> Manage Categories</NavLink>
             </>
           )}
 

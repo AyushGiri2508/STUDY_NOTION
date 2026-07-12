@@ -32,6 +32,10 @@ import MyCourses from './pages/dashboard/MyCourses';
 import AddCourse from './pages/dashboard/AddCourse';
 import ManageCourse from './pages/dashboard/ManageCourse';
 import DashboardHome from './pages/dashboard/DashboardHome';
+import AdminDashboard from './pages/dashboard/AdminDashboard';
+import AdminUsers from './pages/dashboard/AdminUsers';
+import AdminCourses from './pages/dashboard/AdminCourses';
+import AdminCategories from './pages/dashboard/AdminCategories';
 
 function App() {
   return (
@@ -71,6 +75,12 @@ function App() {
               <Route path="my-courses" element={<ProtectedRoute roles={['Instructor']}><MyCourses /></ProtectedRoute>} />
               <Route path="add-course" element={<ProtectedRoute roles={['Instructor']}><AddCourse /></ProtectedRoute>} />
               <Route path="manage-course/:courseId" element={<ProtectedRoute roles={['Instructor']}><ManageCourse /></ProtectedRoute>} />
+
+              {/* Admin */}
+              <Route path="admin" element={<ProtectedRoute roles={['Admin']}><AdminDashboard /></ProtectedRoute>} />
+              <Route path="admin/users" element={<ProtectedRoute roles={['Admin']}><AdminUsers /></ProtectedRoute>} />
+              <Route path="admin/courses" element={<ProtectedRoute roles={['Admin']}><AdminCourses /></ProtectedRoute>} />
+              <Route path="admin/categories" element={<ProtectedRoute roles={['Admin']}><AdminCategories /></ProtectedRoute>} />
             </Route>
           </Routes>
           <Footer />
