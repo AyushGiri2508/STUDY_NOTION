@@ -23,10 +23,7 @@ const ADMIN_LAST_NAME = process.env.ADMIN_LAST_NAME || "StudyNotion";
 const seedAdmin = async () => {
   try {
     // Connect to database
-    await mongoose.connect(process.env.MONGODB_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGODB_URL);
     console.log("✅ Connected to database");
 
     // Check if admin already exists
